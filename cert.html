@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .certificate-container {
+            width: 1000px;
+            height: 700px;
+            background-color: #ffffff;
+            border: 12px solid #0d3b66;
+            outline: 3px solid #e2b041;
+            outline-offset: -8px;
+            padding: 40px 60px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #e2b041;
+            padding-bottom: 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-placeholder {
+            width: 70px;
+            height: 70px;
+            background-color: #0d3b66;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .company-title h1 {
+            font-size: 22px;
+            color: #0d3b66;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        .company-title h2 {
+            font-size: 14px;
+            color: #e2b041;
+            letter-spacing: 4px;
+            font-weight: 600;
+        }
+
+        .company-details {
+            text-align: right;
+            font-size: 11px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .rpto-num {
+            font-weight: 700;
+            color: #0d3b66;
+            margin-top: 4px;
+        }
+
+        /* Main Body Section */
+        .body-content {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .cert-title {
+            font-size: 32px;
+            color: #0d3b66;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+        }
+
+        .cert-subtitle {
+            font-size: 16px;
+            color: #e2b041;
+            letter-spacing: 6px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .cert-text {
+            font-size: 13px;
+            color: #666;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .candidate-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #0d3b66;
+            border-bottom: 2px solid #0d3b66;
+            display: inline-block;
+            padding: 0 40px 5px 40px;
+            margin-bottom: 15px;
+        }
+
+        .roll-no {
+            font-size: 12px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .course-details {
+            font-size: 14px;
+            color: #333;
+            max-width: 750px;
+            margin: 0 auto 20px auto;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .course-category {
+            font-weight: 700;
+            color: #0d3b66;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        /* Dates Table */
+        .dates-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 15px 0;
+            font-size: 12px;
+            color: #444;
+        }
+
+        .date-line {
+            border-bottom: 1px solid #777;
+            padding: 0 10px;
+            font-weight: 600;
+        }
+
+        /* Metadata & Footer */
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: #0d3b66;
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
+
+        .footer-signatures {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+
+        .sig-block {
+            text-align: center;
+            width: 200px;
+        }
+
+        .sig-line {
+            border-top: 1.5px solid #0d3b66;
+            margin-top: 40px;
+            padding-top: 5px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0d3b66;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="certificate-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo-placeholder">LOGO</div>
+                <div class="company-title">
+                    <h2>PRESTIGE</h2>
+                    <h1>SOARING AEROTECH</h1>
+                </div>
+            </div>
+            <div class="company-details">
+                <p><strong>SOARING AEROTECH PVT LTD.</strong></p>
+                <p>Prestige Vihar, Scheme 74 C, Sector D, Vijay Nagar | info@soaringaerotech.com</p>
+                <p>Survey, Thermography, Agriculture, Training, R & D</p>
+                <p class="rpto-num">RPTO Authorisation Number: 40/2023</p>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="body-content">
+            <div class="cert-title">CERTIFICATE</div>
+            <div class="cert-subtitle">— OF COMPLETION —</div>
+
+            <div class="cert-text">THIS IS TO CERTIFY THAT</div>
+            
+            <div class="candidate-name">Aditya</div>
+            <div class="roll-no">ROLL NO: ____________________</div>
+
+            <div class="course-details">
+                has successfully completed the DGCA-approved Remote Pilot Training Course<br>
+                (Theory and Practical) Conducted by Soaring Aerotech Pvt Ltd, Indore MP
+                <div class="course-category">Cat 1 VLOS, Small Class, Rotorcraft Category</div>
+            </div>
+
+            <!-- Dates -->
+            <div class="dates-container">
+                <div>Ground classes from: <span class="date-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> to <span class="date-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+                <div>Simulator & Practical flying from: <span class="date-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> to <span class="date-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+            </div>
+        </div>
+
+        <!-- Meta Info (Cert No & UIN) -->
+        <div class="meta-info">
+            <div>Certificate No: __________________</div>
+            <div>UIN: __________________</div>
+        </div>
+
+        <!-- Signatures -->
+        <div class="footer-signatures">
+            <div class="sig-block">
+                <div class="sig-line">Accountable Manager</div>
+            </div>
+            <div class="sig-block">
+                <div class="sig-line">RPAS Instructor</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
