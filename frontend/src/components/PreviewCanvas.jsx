@@ -254,6 +254,10 @@ export default function PreviewCanvas({
         ? 'serif'
         : conf.font?.includes('Courier')
         ? 'monospace'
+        : conf.font?.includes('Arial')
+        ? 'Arial, sans-serif'
+        : conf.font?.includes('Geometric')
+        ? '"Montserrat", "Poppins", sans-serif'
         : 'sans-serif',
       textAlign: conf.align || 'left',
       whiteSpace: 'nowrap',
@@ -377,19 +381,7 @@ export default function PreviewCanvas({
             </div>
           )}
 
-          {/* Crosshair Guidelines for Active Selected Field */}
-          {activeConf && (
-            <>
-              <div
-                className="absolute top-0 bottom-0 border-l border-dashed border-amber-500/70 pointer-events-none z-10"
-                style={{ left: `${(activeConf.x / pageSize.width) * 100}%` }}
-              />
-              <div
-                className="absolute left-0 right-0 border-t border-dashed border-amber-500/70 pointer-events-none z-10"
-                style={{ top: `${((pageSize.height - activeConf.y) / pageSize.height) * 100}%` }}
-              />
-            </>
-          )}
+          {/* Removed Crosshair Guidelines to reduce clutter */ }
 
           {/* Dynamic Field Overlays with Drag Handlers */}
           {Object.keys(fieldConfigs).map((fieldKey) => {
@@ -407,10 +399,10 @@ export default function PreviewCanvas({
                 style={style}
                 onMouseDown={(e) => handleMouseDown(fieldKey, e)}
                 onTouchStart={(e) => handleMouseDown(fieldKey, e)}
-                className={`absolute pointer-events-auto cursor-grab active:cursor-grabbing px-2 py-0.5 rounded transition-all z-20 ${
+                className={`absolute pointer-events-auto cursor-grab active:cursor-grabbing px-0 py-0 rounded transition-all z-20 ${
                   isActive
-                    ? 'ring-2 ring-amber-500 bg-amber-500/25 text-slate-950 font-bold shadow-lg shadow-amber-500/30'
-                    : 'hover:ring-1 hover:ring-slate-500/80 hover:bg-slate-900/10'
+                    ? 'z-30 drop-shadow-md cursor-grabbing'
+                    : 'hover:ring-1 hover:ring-slate-500/30'
                 }`}
               >
                 <span>{val}</span>

@@ -41,6 +41,10 @@ export default function TemplateMapper({
     'Times-Bold',
     'Courier',
     'Courier-Bold',
+    'Arial',
+    'Arial-Bold',
+    'Geometric-Sans',
+    'Geometric-Sans-Bold'
   ];
 
   const handleConfigChange = (field, key, value) => {

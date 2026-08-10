@@ -13,6 +13,9 @@ import TemplateConfig from './models/TemplateConfig.js';
 import { ensureDefaultTemplateExists } from './defaultTemplate.js';
 import { generateCertificatePdf, DEFAULT_FIELD_CONFIGS, SMALL_CERTIFICATE_CONFIGS } from './pdfEngine.js';
 
+import authRoutes from './routes/authRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +28,9 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Serve static uploads (for logo)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Directories
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -91,6 +97,8 @@ connectDB().then((connected) => {
 ensureDefaultTemplateExists();
 
 // API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health Check with DB Status
 app.get('/api/health', (req, res) => {
@@ -159,6 +167,31 @@ app.post('/api/templates/upload', uploadTemplate.single('templateFile'), async (
       message: 'Template uploaded successfully',
       filename: req.file.filename,
       type,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Get specific template coordinates
+app.get('/api/configs/:templateName', async (req, res) => {
+  try {
+    const { templateName } = req.params;
+    if (isDbConnected) {
+      const config = await TemplateConfig.findOne({ templateName }).lean();
+      if (config) {
+        return res.json({ success: true, config });
+      }
+    }
+    
+    // Return defaults if not found or DB not connected
+    const isSmall = templateName.toLowerCase().includes('small');
+    return res.json({
+      success: true,
+      config: {
+        templateName,
+        fieldConfigs: isSmall ? SMALL_CERTIFICATE_CONFIGS : DEFAULT_FIELD_CONFIGS
+      }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -1,4 +1,5 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -86,6 +87,21 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
     }
   }
 
+  pdfDoc.registerFontkit(fontkit);
+
+  let customFonts = {};
+  try {
+    const fontsDir = path.join(__dirname, 'fonts');
+    if (fs.existsSync(path.join(fontsDir, 'Arimo-Regular.ttf'))) {
+      customFonts['Arial'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Arimo-Regular.ttf')));
+      customFonts['Arial-Bold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Arimo-Bold.ttf')));
+      customFonts['Geometric-Sans'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-Regular.ttf')));
+      customFonts['Geometric-Sans-Bold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-Bold.ttf')));
+    }
+  } catch (err) {
+    console.warn('Failed to load custom TTF fonts, falling back to standard fonts.', err);
+  }
+
   // Pre-load standard fonts
   const fonts = {
     'Helvetica': await pdfDoc.embedFont(StandardFonts.Helvetica),
@@ -97,6 +113,11 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
     'Courier': await pdfDoc.embedFont(StandardFonts.Courier),
     'Courier-Bold': await pdfDoc.embedFont(StandardFonts.CourierBold),
   };
+
+  fonts['Arial'] = customFonts['Arial'] || fonts['Helvetica'];
+  fonts['Arial-Bold'] = customFonts['Arial-Bold'] || fonts['Helvetica-Bold'];
+  fonts['Geometric-Sans'] = customFonts['Geometric-Sans'] || fonts['Helvetica'];
+  fonts['Geometric-Sans-Bold'] = customFonts['Geometric-Sans-Bold'] || fonts['Helvetica-Bold'];
 
   // Helper to draw text for any field defined in config
   const drawFieldText = (key, textValue) => {
