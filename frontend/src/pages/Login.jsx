@@ -27,7 +27,7 @@ export default function Login() {
   const handleSetupAdmin = async () => {
     setSetupLoading(true);
     try {
-      const res = await axios.post('http://127.0.0.1:5000/api/auth/setup-admin', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/setup-admin`, {
         name: 'Super Admin',
         email: email || 'admin@soaring.com',
         password: password || 'admin123'

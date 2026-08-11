@@ -28,7 +28,7 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
         {/* Header */}
         <div style={{ position: 'relative', textAlign: 'center', marginBottom: '25px', marginTop: '10px' }}>
           <div style={{ position: 'absolute', top: '0', right: '0', width: '90px', padding: '5px', textAlign: 'center' }}>
-            <img src="http://127.0.0.1:5000/uploads/soaring-logo.png" alt="Soaring Logo" style={{ maxWidth: '100%', height: 'auto', marginBottom: '5px' }} onError={(e) => e.target.style.display='none'} />
+            <img src={`${import.meta.env.VITE_API_URL}/uploads/soaring-logo.png`} alt="Soaring Logo" style={{ maxWidth: '100%', height: 'auto', marginBottom: '5px' }} onError={(e) => e.target.style.display='none'} />
             {/* <div style={{ fontWeight: 'bold', color: '#1a4d8c', fontSize: '10px' }}>SOARING AEROTECH</div> */}
           </div>
           <br></br>

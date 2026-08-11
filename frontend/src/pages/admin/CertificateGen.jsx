@@ -24,10 +24,10 @@ export default function CertificateGen() {
     const fetchData = async () => {
       try {
         const [candRes, uinRes, tempRes, seqRes] = await Promise.all([
-          axios.get('http://127.0.0.1:5000/api/admin/candidates'),
-          axios.get('http://127.0.0.1:5000/api/admin/uins'),
-          axios.get('http://127.0.0.1:5000/api/templates'),
-          axios.get('http://127.0.0.1:5000/api/admin/next-sequence')
+          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/candidates`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/uins`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/templates`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/next-sequence`)
         ]);
         // Show all candidates
         setCandidates(candRes.data);
@@ -77,7 +77,7 @@ export default function CertificateGen() {
       } catch (e) { }
 
       const response = await axios.post(
-        'http://127.0.0.1:5000/api/admin/generate-certificate',
+        `${import.meta.env.VITE_API_URL}/api/admin/generate-certificate`,
         { ...formData, customConfig },
         { responseType: 'blob' }
       );
@@ -96,7 +96,7 @@ export default function CertificateGen() {
       link.remove();
 
       // Keep candidate and UIN in the lists so they can be reused, but fetch next sequence!
-      const seqRes = await axios.get('http://127.0.0.1:5000/api/admin/next-sequence');
+      const seqRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/next-sequence`);
       const { nextSequence, year } = seqRes.data;
       setFormData({ 
         ...formData, 

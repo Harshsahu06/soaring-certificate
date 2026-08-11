@@ -15,10 +15,10 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         const [candRes, batchRes, uinRes, certRes] = await Promise.all([
-          axios.get('http://127.0.0.1:5000/api/admin/candidates'),
-          axios.get('http://127.0.0.1:5000/api/admin/batches'),
-          axios.get('http://127.0.0.1:5000/api/admin/uins'),
-          axios.get('http://127.0.0.1:5000/api/certificates')
+          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/candidates`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/batches`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/uins`),
+          axios.get(`${import.meta.env.VITE_API_URL}/api/certificates`)
         ]);
         
         setStats({

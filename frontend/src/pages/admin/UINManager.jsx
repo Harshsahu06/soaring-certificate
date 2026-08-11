@@ -9,7 +9,7 @@ export default function UINManager() {
 
   const fetchUins = async () => {
     try {
-      const { data } = await axios.get('http://127.0.0.1:5000/api/admin/uins');
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/uins`);
       setUins(data);
     } catch (error) {
       console.error('Error fetching UINs:', error);
@@ -26,7 +26,7 @@ export default function UINManager() {
     e.preventDefault();
     if (!newUin.trim()) return;
     try {
-      await axios.post('http://127.0.0.1:5000/api/admin/uins', { uinNumber: newUin });
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/uins`, { uinNumber: newUin });
       setNewUin('');
       fetchUins();
     } catch (error) {
@@ -37,7 +37,7 @@ export default function UINManager() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this UIN?')) {
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/admin/uins/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/uins/${id}`);
         fetchUins();
       } catch (error) {
         console.error('Error deleting UIN:', error);

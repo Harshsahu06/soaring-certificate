@@ -24,7 +24,7 @@ export default function TemplateSettings() {
 
   const fetchTemplates = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:5000/api/templates');
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/templates`);
       setTemplates(res.data.templates || []);
       
       const dbConfigs = res.data.savedConfigs || {};

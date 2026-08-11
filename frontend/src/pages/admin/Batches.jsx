@@ -18,7 +18,7 @@ export default function Batches() {
 
   const fetchBatches = async () => {
     try {
-      const { data } = await axios.get('http://127.0.0.1:5000/api/admin/batches');
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/batches`);
       setBatches(data);
     } catch (error) {
       console.error('Error fetching batches:', error);
@@ -35,9 +35,9 @@ export default function Batches() {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`http://127.0.0.1:5000/api/admin/batches/${editingId}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/batches/${editingId}`, formData);
       } else {
-        await axios.post('http://127.0.0.1:5000/api/admin/batches', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/batches`, formData);
       }
       setShowModal(false);
       setEditingId(null);
@@ -66,7 +66,7 @@ export default function Batches() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this batch?')) {
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/admin/batches/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/batches/${id}`);
         fetchBatches();
       } catch (error) {
         console.error('Error deleting batch:', error);

@@ -48,8 +48,8 @@ export default function Candidates() {
   const fetchData = async () => {
     try {
       const [candRes, batchRes] = await Promise.all([
-        axios.get('http://127.0.0.1:5000/api/admin/candidates'),
-        axios.get('http://127.0.0.1:5000/api/admin/batches')
+        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/candidates`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/batches`)
       ]);
       setCandidates(candRes.data);
       setBatches(batchRes.data);
@@ -69,9 +69,9 @@ export default function Candidates() {
     if (!formData.batch) return alert("Please select a batch");
     try {
       if (editingId) {
-        await axios.put(`http://127.0.0.1:5000/api/admin/candidates/${editingId}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${editingId}`, formData);
       } else {
-        await axios.post('http://127.0.0.1:5000/api/admin/candidates', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/candidates`, formData);
       }
       setShowModal(false);
       setEditingId(null);
@@ -122,7 +122,7 @@ export default function Candidates() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this candidate?')) {
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/admin/candidates/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${id}`);
         fetchData();
       } catch (error) {
         console.error('Error deleting candidate:', error);
