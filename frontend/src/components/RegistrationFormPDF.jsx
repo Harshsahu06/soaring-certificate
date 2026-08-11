@@ -26,16 +26,30 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
         </style>
 
         {/* Header */}
-        <div style={{ position: 'relative', textAlign: 'center', marginBottom: '25px', marginTop: '10px' }}>
-          <h1 style={{ fontSize: '20px', margin: '0', fontWeight: 'bold' }}>Soaring Aerotech Private Limited</h1>
-
-          <div style={{ position: 'absolute', top: '0', right: '0', width: '90px', padding: '5px', textAlign: 'center' }}>
-            <img src={logo} alt="Soaring Logo" style={{ maxWidth: '100%', height: 'auto', marginBottom: '5px' }} onError={(e) => e.target.style.display = 'none'} />
-            {/* <div style={{ fontWeight: 'bold', color: '#1a4d8c', fontSize: '10px' }}>SOARING AEROTECH</div> */}
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '25px', marginTop: '10px' }}>
+          {/* Logo */}
+          <div style={{ width: '110px', flexShrink: 0, marginRight: '20px' }}>
+            <img src={logo} alt="Soaring Logo" style={{ width: '100%', height: 'auto' }} onError={(e) => e.target.style.display = 'none'} />
           </div>
-          <br></br>
-          <br></br>
-          <br></br>
+          {/* Company Details */}
+          <div style={{ flex: 1, textAlign: 'left', lineHeight: '1.4' }}>
+            <div style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '22px', fontWeight: 'bold', color: '#000', marginBottom: '4px' }}>
+              Soaring Aerotech PVT. LTD.
+            </div>
+            <div style={{ fontSize: '12px', color: '#333', marginBottom: '4px' }}>
+              3rd Floor AIC Block, Scheme 74C, Sector D, Vijay Nagar, Indore, Madhya Pradesh, India, 452010
+            </div>
+            <div style={{ fontSize: '12px', color: '#333', marginBottom: '2px' }}>
+              Contact No: +91 78699 18736 | +91 78699 55418 | Web: www.soaringaerotech.com
+            </div>
+            <div style={{ fontSize: '12px', color: '#333' }}>
+              E-mail : <span style={{ color: '#0563c1', textDecoration: 'underline' }}>info@soaringaerotech.com</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Title */}
+        <div style={{ textAlign: 'center', marginBottom: '25px', borderTop: '2px solid #1a4d8c', paddingTop: '15px' }}>
           <h1 style={{ fontSize: '20px', margin: '0', fontWeight: 'bold' }}>Remote Pilot Training Course</h1>
           <h2 style={{ fontSize: '18px', margin: '5px 0 0 0', fontWeight: 'bold' }}>Registration Form</h2>
         </div>
@@ -138,7 +152,7 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
           <div>
             <p style={{ margin: '5px 0' }}>Place of Signing: <strong>______________________</strong></p>
             <br></br>
-            <br></br>
+
 
             <p style={{ margin: '5px 0' }}>Signature: ______________________</p>
           </div>
@@ -147,11 +161,8 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
           </div>
         </div>
 
-        {/* Company Footer */}
-        <br></br>
-        <br></br>
-        <br></br>
-        <br></br>
+
+
 
 
 
