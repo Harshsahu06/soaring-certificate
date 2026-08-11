@@ -31,7 +31,13 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static uploads (for logo)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
-
+app.get('/api/soaring', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Certificate Generator Backend API is running',
+   
+  });
+});
 // Directories
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 const TEMPLATES_DIR = path.join(__dirname, 'templates');
