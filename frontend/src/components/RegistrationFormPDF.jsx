@@ -1,5 +1,5 @@
 import React from 'react';
-
+import logo from "../assets/soaring-logo.png"
 const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
   if (!candidate) return null;
 
@@ -24,11 +24,13 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
             }
           `}
         </style>
-        
+
         {/* Header */}
         <div style={{ position: 'relative', textAlign: 'center', marginBottom: '25px', marginTop: '10px' }}>
+          <h1 style={{ fontSize: '20px', margin: '0', fontWeight: 'bold' }}>Soaring Aerotech Private Limited</h1>
+
           <div style={{ position: 'absolute', top: '0', right: '0', width: '90px', padding: '5px', textAlign: 'center' }}>
-            <img src={`${import.meta.env.VITE_API_URL}/uploads/soaring-logo.png`} alt="Soaring Logo" style={{ maxWidth: '100%', height: 'auto', marginBottom: '5px' }} onError={(e) => e.target.style.display='none'} />
+            <img src={logo} alt="Soaring Logo" style={{ maxWidth: '100%', height: 'auto', marginBottom: '5px' }} onError={(e) => e.target.style.display = 'none'} />
             {/* <div style={{ fontWeight: 'bold', color: '#1a4d8c', fontSize: '10px' }}>SOARING AEROTECH</div> */}
           </div>
           <br></br>
@@ -49,7 +51,7 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
           </thead>
           <tbody>
             {[
-              ['Full Name (as per Class 10th Certificate):', candidate.fullName],
+              ['Full Name:', candidate.fullName],
               ['Permanent Address:', candidate.permanentAddress],
               ['Phone number:', candidate.phoneNumber],
               ['Email Address:', candidate.emailAddress],
@@ -135,8 +137,8 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
         <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '12px' }}>
           <div>
             <p style={{ margin: '5px 0' }}>Place of Signing: <strong>______________________</strong></p>
-        <br></br>
-        <br></br>
+            <br></br>
+            <br></br>
 
             <p style={{ margin: '5px 0' }}>Signature: ______________________</p>
           </div>
@@ -150,10 +152,10 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
         <br></br>
         <br></br>
         <br></br>
-        <br></br>
-        <br></br>
-    
-    
+
+
+
+
 
         <div style={{ marginTop: '30px', textAlign: 'center', fontSize: '11px', fontStyle: 'italic', paddingTop: '8px' }}>
           Soaring Aerotech Pvt Ltd / info@soaringaerotech.com / www.soaringaerotech.com

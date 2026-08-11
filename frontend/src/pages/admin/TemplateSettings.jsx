@@ -7,13 +7,13 @@ export default function TemplateSettings() {
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [fieldConfigs, setFieldConfigs] = useState({});
   const [formData, setFormData] = useState({
-    candidateName: 'John Doe',
-    rollNo: 'R-1234',
-    groundFrom: '01 Jan 2026',
-    groundTo: '05 Jan 2026',
-    simulatorFrom: '06 Jan 2026',
-    simulatorTo: '10 Jan 2026',
-    certificateNo: 'CERT-123456',
+    candidateName: 'Ashish bamnawat',
+    rollNo: 'SAPL/2026/DPC/159',
+    groundFrom: '01/01/2026',
+    groundTo: '05/05/2026',
+    simulatorFrom: '06/06/2026',
+    simulatorTo: '10/01/2026',
+    certificateNo: 'SAPL/2026/159',
     uin: 'UA12345678',
     courseName: 'Drone Pilot Training',
     duration: '10 Days',
@@ -26,7 +26,7 @@ export default function TemplateSettings() {
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/templates`);
       setTemplates(res.data.templates || []);
-      
+
       const dbConfigs = res.data.savedConfigs || {};
       setSavedConfigsMap(dbConfigs);
 
@@ -45,7 +45,7 @@ export default function TemplateSettings() {
   // Apply configs when template changes
   useEffect(() => {
     if (!selectedTemplate) return;
-    
+
     // 1. Try to get from DB map
     if (savedConfigsMap[selectedTemplate]) {
       setFieldConfigs(savedConfigsMap[selectedTemplate]);
@@ -59,7 +59,7 @@ export default function TemplateSettings() {
         setFieldConfigs(JSON.parse(local));
         return;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     // 3. Reset if neither found
     setFieldConfigs({});
@@ -75,7 +75,7 @@ export default function TemplateSettings() {
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
-        <TemplateMapper 
+        <TemplateMapper
           templates={templates}
           fetchTemplates={fetchTemplates}
           fieldConfigs={fieldConfigs}

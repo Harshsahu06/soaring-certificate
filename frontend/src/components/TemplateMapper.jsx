@@ -7,11 +7,11 @@ export default function TemplateMapper({
   templates = [],
   fetchTemplates,
   fieldConfigs = {},
-  setFieldConfigs = () => {},
+  setFieldConfigs = () => { },
   selectedTemplate = 'default-template.pdf',
-  setSelectedTemplate = () => {},
+  setSelectedTemplate = () => { },
   formData = {},
-  setFormData = () => {},
+  setFormData = () => { },
   theme = 'light',
 }) {
   const isDark = theme === 'dark';
@@ -78,10 +78,10 @@ export default function TemplateMapper({
   const handleSaveConfigs = async () => {
     try {
       setSaveMsg('Saving coordinates permanently...');
-      
+
       try {
         localStorage.setItem(`cert_config_${selectedTemplate}`, JSON.stringify(fieldConfigs));
-      } catch (e) {}
+      } catch (e) { }
 
       await axios.post('/api/configs/save', {
         templateName: selectedTemplate,
@@ -122,29 +122,207 @@ export default function TemplateMapper({
     }
   };
 
+
+
   const loadPreset = (type) => {
     if (type === 'rpto') {
       setFieldConfigs({
-        candidateName: { x: 421, y: 278, fontSize: 24, font: 'Helvetica-Bold', align: 'center', color: '#dc2626' },
-        rollNo: { x: 355, y: 248, fontSize: 14, font: 'Helvetica', align: 'left', color: '#000000' },
-        groundFrom: { x: 375, y: 190, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-        groundTo: { x: 495, y: 190, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-        simulatorFrom: { x: 425, y: 168, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-        simulatorTo: { x: 545, y: 168, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-        certificateNo: { x: 410, y: 120, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-        uin: { x: 385, y: 96, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
+        candidateName: {
+          x: 423,
+          y: 277,
+          fontSize: 38,
+          font: 'Helvetica-Bold',
+          color: '#d22426',
+          align: 'center'
+        },
+
+        rollNo: {
+          x: 397,
+          y: 256,
+          fontSize: 14,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        groundFrom: {
+          x: 409,
+          y: 197,
+          fontSize: 14,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        groundTo: {
+          x: 515,
+          y: 197,
+          fontSize: 14,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        simulatorFrom: {
+          x: 456,
+          y: 179,
+          fontSize: 13,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        simulatorTo: {
+          x: 567,
+          y: 180,
+          fontSize: 13,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        certificateNo: {
+          x: 417,
+          y: 127,
+          fontSize: 15,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        uin: {
+          x: 386,
+          y: 102,
+          fontSize: 15,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
       });
+
     } else {
+
+      // setFieldConfigs({
+      //   candidateName: {
+      //     x: 420.94,
+      //     y: 375,
+      //     fontSize: 32,
+      //     font: 'Helvetica-Bold',
+      //     color: '#dc2626',
+      //     align: 'center'
+      //   },
+
+      //   courseName: {
+      //     x: 420.94,
+      //     y: 275,
+      //     fontSize: 24,
+      //     font: 'Helvetica-Bold',
+      //     color: '#d97706',
+      //     align: 'center'
+      //   },
+
+      //   duration: {
+      //     x: 200,
+      //     y: 120,
+      //     fontSize: 11,
+      //     font: 'Helvetica',
+      //     color: '#374151',
+      //     align: 'center'
+      //   },
+
+      //   issueDate: {
+      //     x: 200,
+      //     y: 140,
+      //     fontSize: 12,
+      //     font: 'Helvetica-Bold',
+      //     color: '#111827',
+      //     align: 'center'
+      //   },
+
+      //   certificateNo: {
+      //     x: 730,
+      //     y: 540,
+      //     fontSize: 11,
+      //     font: 'Helvetica-Bold',
+      //     color: '#4b5563',
+      //     align: 'right'
+      //   },
+      // });
       setFieldConfigs({
-        candidateName: { x: 420.94, y: 375, fontSize: 32, font: 'Helvetica-Bold', color: '#dc2626', align: 'center' },
-        courseName: { x: 420.94, y: 275, fontSize: 24, font: 'Helvetica-Bold', color: '#d97706', align: 'center' },
-        duration: { x: 200, y: 120, fontSize: 11, font: 'Helvetica', color: '#374151', align: 'center' },
-        issueDate: { x: 200, y: 140, fontSize: 12, font: 'Helvetica-Bold', color: '#111827', align: 'center' },
-        certificateNo: { x: 730, y: 540, fontSize: 11, font: 'Helvetica-Bold', color: '#4b5563', align: 'right' },
+        candidateName: {
+          x: 423,
+          y: 277,
+          fontSize: 38,
+          font: 'Helvetica-Bold',
+          color: '#d22426',
+          align: 'center'
+        },
+
+        rollNo: {
+          x: 397,
+          y: 256,
+          fontSize: 14,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        groundFrom: {
+          x: 409,
+          y: 197,
+          fontSize: 14,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        groundTo: {
+          x: 515,
+          y: 197,
+          fontSize: 14,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        simulatorFrom: {
+          x: 456,
+          y: 179,
+          fontSize: 13,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        simulatorTo: {
+          x: 567,
+          y: 180,
+          fontSize: 13,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        certificateNo: {
+          x: 417,
+          y: 127,
+          fontSize: 15,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
+
+        uin: {
+          x: 386,
+          y: 102,
+          fontSize: 15,
+          font: 'Geometric-Sans',
+          color: '#000000',
+          align: 'left'
+        },
       });
     }
-  };
-
+  }
   const currentConf = fieldConfigs?.[activeField] || { x: 420, y: 300, fontSize: 16, font: 'Helvetica', color: '#000000', align: 'left' };
 
   const inputStyle = isDark
@@ -243,13 +421,12 @@ export default function TemplateMapper({
                 <button
                   key={fieldKey}
                   onClick={() => setActiveField(fieldKey)}
-                  className={`px-3 py-2 rounded-xl text-xs font-medium transition-all text-left truncate flex items-center justify-between ${
-                    activeField === fieldKey
-                      ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25 ring-2 ring-amber-400'
-                      : isDark
+                  className={`px-3 py-2 rounded-xl text-xs font-medium transition-all text-left truncate flex items-center justify-between ${activeField === fieldKey
+                    ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25 ring-2 ring-amber-400'
+                    : isDark
                       ? 'bg-slate-900/90 text-slate-400 hover:text-slate-200 border border-slate-800/80'
                       : 'bg-white text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm'
-                  }`}
+                    }`}
                 >
                   <span className="truncate">{fieldLabels[fieldKey]}</span>
                   {activeField === fieldKey && <span className="w-1.5 h-1.5 rounded-full bg-slate-950"></span>}
