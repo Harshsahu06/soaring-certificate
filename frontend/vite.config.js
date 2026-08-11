@@ -13,4 +13,9 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
+  base: '/', // Changed to absolute root path to fix deep routing issues
 });

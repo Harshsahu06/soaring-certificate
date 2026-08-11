@@ -183,7 +183,7 @@ app.get('/api/configs/:templateName', async (req, res) => {
         return res.json({ success: true, config });
       }
     }
-    
+
     // Return defaults if not found or DB not connected
     const isSmall = templateName.toLowerCase().includes('small');
     return res.json({
@@ -229,7 +229,7 @@ app.post('/api/generate-single', async (req, res) => {
       courseName = 'Full Stack Development',
       duration = '3 Months',
       issueDate = new Date().toLocaleDateString('en-GB'),
-      certificateNo = 'CERT-' + Math.floor(100000 + Math.random() * 900000),
+      certificateNo = 'SAPL/2026/' + Math.floor(100000 + Math.random() * 900000),
       rollNo = '',
       groundFrom = '',
       groundTo = '',
@@ -321,7 +321,7 @@ app.post('/api/parse-excel', upload.single('excelFile'), (req, res) => {
         courseName: getVal('course name', 'course', 'program', 'subject') || 'General Course',
         duration: getVal('duration', 'period', 'months', 'time') || '1 Month',
         issueDate: getVal('issue date', 'date', 'issued date', 'issue_date') || new Date().toLocaleDateString('en-GB'),
-        certificateNo: getVal('certificate number', 'certificate no', 'cert no', 'id', 'code') || `CERT-${1000 + index}`,
+        certificateNo: getVal('certificate number', 'certificate no', 'cert no', 'id', 'code') || `SAPL/2026/${1000 + index}`,
         rollNo: getVal('roll no', 'roll number', 'rollno', 'roll_no') || '',
         groundFrom: getVal('ground from', 'ground_from', 'ground start') || '',
         groundTo: getVal('ground to', 'ground_to', 'ground end') || '',
@@ -361,7 +361,7 @@ app.post('/api/generate-bulk', async (req, res) => {
       const courseName = rec.courseName || rec.Course || 'Course';
       const duration = rec.duration || rec.Duration || '';
       const issueDate = rec.issueDate || rec.Date || '';
-      const certificateNo = rec.certificateNo || rec['Certificate No'] || `CERT-${1000 + i}`;
+      const certificateNo = rec.certificateNo || rec['Certificate No'] || `SAPL/2026/${1000 + i}`;
 
       const pdfBytes = await generateCertificatePdf(
         {
@@ -436,9 +436,11 @@ app.get('/api/certificates', async (req, res) => {
   }
 });
 
-// Start Server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Certificate Generator Backend running on http://127.0.0.1:${PORT}`);
-});
+// Start Server (Only if not running on Vercel)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Certificate Generator Backend running on http://127.0.0.1:${PORT}`);
+  });
+}
 
-
+export default app;

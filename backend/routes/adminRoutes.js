@@ -125,11 +125,35 @@ router.delete('/uins/:id', async (req, res) => {
 });
 
 // ========================
-// Certificate Generation
+// Certificate Generation & Sequence
 // ========================
+router.get('/next-sequence', async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const certs = await Certificate.find({ certificateNo: new RegExp(`^SAPL/${currentYear}/`) }, 'certificateNo');
+    
+    // Default to 158 for 2026 based on user requirement, 0 for other years to reset
+    let maxSeq = currentYear === 2026 ? 158 : 0; 
+    
+    certs.forEach(c => {
+      const parts = c.certificateNo.split('/');
+      if (parts.length === 3) {
+        const seq = parseInt(parts[2]);
+        if (!isNaN(seq) && seq > maxSeq) {
+          maxSeq = seq;
+        }
+      }
+    });
+    
+    res.json({ nextSequence: maxSeq + 1, year: currentYear });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.post('/generate-certificate', async (req, res) => {
   try {
-    const { candidateId, uinId, certificateNo, courseName, duration, issueDate, templateFileName = 'default-template.pdf' } = req.body;
+    const { candidateId, uinId, certificateNo, rollNo, courseName, duration, issueDate, templateFileName = 'default-template.pdf' } = req.body;
 
     const candidate = await Candidate.findById(candidateId).populate('batch');
     const uin = await UIN.findById(uinId);
@@ -145,7 +169,7 @@ router.post('/generate-certificate', async (req, res) => {
       duration,
       issueDate,
       certificateNo,
-      rollNo: candidate.rollNo || `R-${candidate.aadharNumber.slice(-4)}`,
+      rollNo: rollNo || candidate.rollNo || `R-${candidate.aadharNumber.slice(-4)}`,
       groundFrom: candidate.batch.groundClassFrom,
       groundTo: candidate.batch.groundClassTo,
       simulatorFrom: candidate.batch.simulatorFrom,
@@ -177,6 +201,12 @@ router.post('/generate-certificate', async (req, res) => {
       templateName: templateFileName,
       generationType: 'single'
     });
+
+    // Update candidate's rollNo if provided
+    if (rollNo && candidate.rollNo !== rollNo) {
+      candidate.rollNo = rollNo;
+      await candidate.save();
+    }
 
     // Update UIN usage count (optional, just for tracking)
     uin.isAssigned = true;
