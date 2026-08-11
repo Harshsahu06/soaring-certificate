@@ -94,7 +94,7 @@ let isDbConnected = false;
 connectDB().then((connected) => {
   isDbConnected = connected;
 });
-ensureDefaultTemplateExists();
+// ensureDefaultTemplateExists();
 
 // API Routes
 app.use('/api/auth', authRoutes);
