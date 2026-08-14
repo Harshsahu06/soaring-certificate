@@ -8,7 +8,8 @@ const BatchSchema = new mongoose.Schema({
   simulatorTo: { type: String, required: true },
   flyingClassFrom: { type: String, required: true },
   flyingClassTo: { type: String, required: true },
-  status: { type: String, enum: ['active', 'completed'], default: 'active' },
+  status: { type: String, default: 'Pending' },
+  isStatusOverridden: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export default mongoose.model('Batch', BatchSchema);

@@ -18,7 +18,7 @@ export default function Batches() {
     simulatorTo: '',
     flyingClassFrom: '',
     flyingClassTo: '',
-    status: 'active'
+    status: 'Pending'
   });
 
   const fetchBatches = async () => {
@@ -48,7 +48,7 @@ export default function Batches() {
       setEditingId(null);
       fetchBatches();
       setFormData({
-        batchName: '', groundClassFrom: '', groundClassTo: '', simulatorFrom: '', simulatorTo: '', flyingClassFrom: '', flyingClassTo: '', status: 'active'
+        batchName: '', groundClassFrom: '', groundClassTo: '', simulatorFrom: '', simulatorTo: '', flyingClassFrom: '', flyingClassTo: '', status: 'Pending'
       });
     } catch (error) {
       console.error('Error saving batch:', error);
@@ -65,7 +65,7 @@ export default function Batches() {
       simulatorTo: batch.simulatorTo || '',
       flyingClassFrom: batch.flyingClassFrom || '',
       flyingClassTo: batch.flyingClassTo || '',
-      status: batch.status || 'active'
+      status: batch.status || 'Pending'
     });
     setShowModal(true);
   };
@@ -214,7 +214,7 @@ export default function Batches() {
           onClick={() => {
             setEditingId(null);
             setFormData({
-              batchName: '', groundClassFrom: '', groundClassTo: '', simulatorFrom: '', simulatorTo: '', flyingClassFrom: '', flyingClassTo: '', status: 'active'
+              batchName: '', groundClassFrom: '', groundClassTo: '', simulatorFrom: '', simulatorTo: '', flyingClassFrom: '', flyingClassTo: '', status: 'Pending'
             });
             setShowModal(true);
           }}
@@ -255,8 +255,13 @@ export default function Batches() {
                     {batch.flyingClassFrom} to {batch.flyingClassTo}
                   </td>
                   <td className="p-4">
-                    <span className={`px-2 py-1 text-xs rounded-full font-medium ${batch.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}`}>
-                      {batch.status}
+                    <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                      batch.status === 'Active' || batch.status === 'Started' || batch.status === 'active' ? 'bg-green-100 text-green-700' : 
+                      batch.status === 'Completed' ? 'bg-blue-100 text-blue-700' :
+                      batch.status === 'Paused' ? 'bg-amber-100 text-amber-700' :
+                      'bg-slate-100 text-slate-700'
+                    }`}>
+                      {batch.status === 'active' ? 'Active' : batch.status}
                     </span>
                   </td>
                   <td className="p-4 text-right flex justify-end gap-2">
@@ -321,6 +326,19 @@ export default function Batches() {
                   <label className="block text-sm font-medium mb-1 dark:text-slate-300">Flying To</label>
                   <input required type="date" className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     value={formData.flyingClassTo} onChange={e => setFormData({ ...formData, flyingClassTo: e.target.value })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 mt-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 dark:text-slate-300">Batch Status (Overrides Auto-Status)</label>
+                  <select className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })}>
+                    <option value="Pending">Pending</option>
+                    <option value="Started">Started</option>
+                    <option value="Active">Active</option>
+                    <option value="Paused">Paused</option>
+                    <option value="Completed">Completed</option>
+                  </select>
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">

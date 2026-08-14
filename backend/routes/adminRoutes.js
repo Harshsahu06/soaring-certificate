@@ -30,7 +30,51 @@ router.post('/batches', async (req, res) => {
 
 router.get('/batches', async (req, res) => {
   try {
-    const batches = await Batch.find().sort('-createdAt');
+    let batches = await Batch.find().sort('-createdAt');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let updated = false;
+    for (let batch of batches) {
+      if (!batch.isStatusOverridden) {
+        const toDates = [batch.groundClassTo, batch.simulatorTo, batch.flyingClassTo].filter(Boolean).map(d => new Date(d));
+        const fromDates = [batch.groundClassFrom, batch.simulatorFrom, batch.flyingClassFrom].filter(Boolean).map(d => new Date(d));
+        
+        if (toDates.length > 0 && fromDates.length > 0) {
+          const maxDate = new Date(Math.max(...toDates));
+          maxDate.setHours(0, 0, 0, 0);
+          const minDate = new Date(Math.min(...fromDates));
+          minDate.setHours(0, 0, 0, 0);
+
+          let newStatus = batch.status;
+          if (today > maxDate) {
+            newStatus = 'Completed';
+          } else if (today >= minDate && today <= maxDate) {
+            newStatus = 'Active';
+          } else if (today < minDate) {
+            newStatus = 'Pending';
+          }
+
+          // In case it's currently something like 'active' from older schema
+          if (batch.status === 'active') batch.status = 'Active';
+
+          if (batch.status !== newStatus) {
+            batch.status = newStatus;
+            try {
+              await batch.save();
+              updated = true;
+            } catch (err) {
+              console.warn(`Could not auto-update batch ${batch._id}:`, err.message);
+            }
+          }
+        }
+      }
+    }
+
+    if (updated) {
+      batches = await Batch.find().sort('-createdAt');
+    }
+
     res.json(batches);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -39,6 +83,15 @@ router.get('/batches', async (req, res) => {
 
 router.put('/batches/:id', async (req, res) => {
   try {
+    const existing = await Batch.findById(req.params.id);
+    if (req.body.status && existing.status !== req.body.status) {
+       req.body.isStatusOverridden = true;
+    }
+    // Allow frontend to explicitly reset the override (e.g. if they just want it to auto-manage again)
+    if (req.body.resetOverride) {
+       req.body.isStatusOverridden = false;
+    }
+
     const batch = await Batch.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(batch);
   } catch (error) {
