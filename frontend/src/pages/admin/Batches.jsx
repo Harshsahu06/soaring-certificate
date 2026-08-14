@@ -71,11 +71,13 @@ export default function Batches() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this batch?')) {
+    const pwd = window.prompt('Enter deletion password:');
+    if (pwd) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/batches/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/batches/${id}`, { data: { password: pwd } });
         fetchBatches();
       } catch (error) {
+        alert(error.response?.data?.message || 'Error deleting batch');
         console.error('Error deleting batch:', error);
       }
     }
@@ -100,10 +102,27 @@ export default function Batches() {
       const minDate = new Date(Math.min(...dates));
       const maxDate = new Date(Math.max(...dates));
 
+      const isDateInRange = (d, startStr, endStr) => {
+        if (!startStr || !endStr) return false;
+        const start = new Date(startStr);
+        const end = new Date(endStr);
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+        const check = new Date(d);
+        check.setHours(0, 0, 0, 0);
+        return check >= start && check <= end;
+      };
+
       const days = [];
       let current = new Date(minDate);
       while (current <= maxDate) {
-        days.push(new Date(current));
+        if (
+          isDateInRange(current, batch.groundClassFrom, batch.groundClassTo) ||
+          isDateInRange(current, batch.simulatorFrom, batch.simulatorTo) ||
+          isDateInRange(current, batch.flyingClassFrom, batch.flyingClassTo)
+        ) {
+          days.push(new Date(current));
+        }
         current.setDate(current.getDate() + 1);
       }
 

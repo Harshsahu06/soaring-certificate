@@ -52,8 +52,8 @@ export default function IssueStock() {
   };
 
   const selectedItem = items.find(i => i._id === formData.itemId);
-  // Disable if non-consumable is already assigned
-  const isAvailable = selectedItem ? (selectedItem.type === 'Consumable' ? selectedItem.currentQuantity > 0 : selectedItem.status === 'Available') : false;
+  // Disable if out of stock or requires maintenance
+  const isAvailable = selectedItem ? (selectedItem.currentQuantity > 0 && !['Maintenance', 'Damaged'].includes(selectedItem.status)) : false;
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -79,8 +79,8 @@ export default function IssueStock() {
                          Stock Available: {selectedItem.currentQuantity} {selectedItem.unit}
                       </p>
                    ) : (
-                      <p className={selectedItem.status === 'Available' ? 'text-emerald-600' : 'text-red-600'}>
-                         Status: {selectedItem.status}
+                      <p className={selectedItem.currentQuantity > 0 ? 'text-emerald-600' : 'text-red-600'}>
+                         Available Quantity: {selectedItem.currentQuantity}
                       </p>
                    )}
                  </div>
@@ -99,7 +99,7 @@ export default function IssueStock() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-4">
-            {selectedItem?.type === 'Consumable' && (
+            {selectedItem && (
               <div>
                 <label className="block text-sm font-medium mb-1">Quantity *</label>
                 <input required type="number" min="1" max={selectedItem.currentQuantity} value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2" />

@@ -48,6 +48,11 @@ router.put('/batches/:id', async (req, res) => {
 
 router.delete('/batches/:id', async (req, res) => {
   try {
+    const { password } = req.body;
+    const requiredPassword = process.env.DELETE_PASSWORD || 'soaring@2026';
+    if (password !== requiredPassword) {
+      return res.status(401).json({ message: 'Incorrect password. Deletion denied.' });
+    }
     await Batch.findByIdAndDelete(req.params.id);
     res.json({ message: 'Batch deleted' });
   } catch (error) {
@@ -87,6 +92,11 @@ router.put('/candidates/:id', async (req, res) => {
 
 router.delete('/candidates/:id', async (req, res) => {
   try {
+    const { password } = req.body;
+    const requiredPassword = process.env.DELETE_PASSWORD || 'soaring@2026';
+    if (password !== requiredPassword) {
+      return res.status(401).json({ message: 'Incorrect password. Deletion denied.' });
+    }
     await Candidate.findByIdAndDelete(req.params.id);
     res.json({ message: 'Candidate deleted' });
   } catch (error) {
@@ -121,6 +131,11 @@ router.get('/uins', async (req, res) => {
 
 router.delete('/uins/:id', async (req, res) => {
   try {
+    const { password } = req.body;
+    const requiredPassword = process.env.DELETE_PASSWORD || 'soaring@2026';
+    if (password !== requiredPassword) {
+      return res.status(401).json({ message: 'Incorrect password. Deletion denied.' });
+    }
     await UIN.findByIdAndDelete(req.params.id);
     res.json({ message: 'UIN deleted' });
   } catch (error) {

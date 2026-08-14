@@ -122,11 +122,13 @@ export default function Candidates() {
   });
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this candidate?')) {
+    const pwd = window.prompt('Enter deletion password:');
+    if (pwd) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${id}`, { data: { password: pwd } });
         fetchData();
       } catch (error) {
+        alert(error.response?.data?.message || 'Error deleting candidate');
         console.error('Error deleting candidate:', error);
       }
     }

@@ -20,7 +20,7 @@ export default function AdminLayout() {
     { name: 'Candidates', path: '/admin/candidates', icon: Users },
     { name: 'UIN Manager', path: '/admin/uins', icon: Key },
     { name: 'Certificates', path: '/admin/certificates', icon: FileText },
-    { name: 'Certificate History', path: '/admin/history', icon: Database },
+    ...(user?.role !== 'rpto-head' ? [{ name: 'Certificate History', path: '/admin/history', icon: Database }] : []),
     ...(user?.role !== 'rpto-head' ? [{ name: 'Template Settings', path: '/admin/template-settings', icon: Sliders }] : []),
   ];
 
@@ -29,7 +29,7 @@ export default function AdminLayout() {
   }
 
   // Role-based route protection
-  if (user.role === 'rpto-head' && (location.pathname.includes('/inventory') || location.pathname.includes('/template-settings'))) {
+  if (user.role === 'rpto-head' && (location.pathname.includes('/inventory') || location.pathname.includes('/template-settings') || location.pathname.includes('/history'))) {
     return <Navigate to="/admin/dashboard" replace />;
   }
 

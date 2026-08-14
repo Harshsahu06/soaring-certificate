@@ -156,62 +156,34 @@ router.post('/transactions/issue', async (req, res) => {
 
     const previousQuantity = item.currentQuantity || 0;
 
-    if (item.type === 'Consumable') {
-      if (previousQuantity < qty) {
-        return res.status(400).json({ success: false, message: `Insufficient stock. Only ${previousQuantity} available.` });
-      }
-      const newQuantity = previousQuantity - qty;
+    if (previousQuantity < qty) {
+      return res.status(400).json({ success: false, message: `Insufficient stock. Only ${previousQuantity} available.` });
+    }
+    const newQuantity = previousQuantity - qty;
 
-      const transaction = new InventoryTransaction({
-        item: itemId,
-        type: 'ISSUE',
-        quantity: -qty, // negative for issue
-        previousQuantity,
-        newQuantity,
-        person: personId,
-        project,
-        location,
-        remarks,
-        date: date || new Date()
-      });
-      await transaction.save();
+    const transaction = new InventoryTransaction({
+      item: itemId,
+      type: 'ISSUE',
+      quantity: -qty, // negative for issue
+      previousQuantity,
+      newQuantity,
+      person: personId,
+      project,
+      location,
+      remarks,
+      date: date || new Date()
+    });
+    await transaction.save();
 
-      item.currentQuantity = newQuantity;
-      await item.save();
-
-      res.json({ success: true, transaction, item });
-    } else {
-      // Non-Consumable logic (assigning the asset)
-      // Usually quantity is 1 for a specific asset, but let's handle as requested
-      if (item.status !== 'Available') {
-        return res.status(400).json({ success: false, message: `Item is not available. Current status: ${item.status}` });
-      }
-
-      // Even if qty is 1, let's keep stock accuracy. We can assume qty=1 for non-consumables representing a single asset
-      const newQuantity = previousQuantity > 0 ? previousQuantity - 1 : 0; // conceptually they are issued
-
-      const transaction = new InventoryTransaction({
-        item: itemId,
-        type: 'ISSUE',
-        quantity: -1,
-        previousQuantity,
-        newQuantity,
-        person: personId,
-        project,
-        location,
-        remarks,
-        date: date || new Date()
-      });
-      await transaction.save();
-
-      item.currentQuantity = newQuantity;
-      item.status = 'Assigned';
+    item.currentQuantity = newQuantity;
+    if (item.type === 'Non-Consumable') {
+      item.status = newQuantity === 0 ? 'Assigned' : 'Available';
       item.currentHolder = personId;
       item.currentLocation = location || '';
-      await item.save();
-
-      res.json({ success: true, transaction, item });
     }
+    await item.save();
+
+    res.json({ success: true, transaction, item });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
   }
@@ -228,13 +200,16 @@ router.post('/transactions/return', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Returns are primarily for non-consumable assets' });
     }
 
+    const qty = Number(req.body.quantity) || 1;
+    if (qty <= 0) return res.status(400).json({ success: false, message: 'Quantity must be positive' });
+
     const previousQuantity = item.currentQuantity || 0;
-    const newQuantity = previousQuantity + 1;
+    const newQuantity = previousQuantity + qty;
 
     const transaction = new InventoryTransaction({
       item: itemId,
       type: 'RETURN',
-      quantity: 1, // positive
+      quantity: qty, // positive
       previousQuantity,
       newQuantity,
       person: personId || item.currentHolder, // person returning it
@@ -244,8 +219,12 @@ router.post('/transactions/return', async (req, res) => {
     await transaction.save();
 
     item.currentQuantity = newQuantity;
-    item.currentHolder = null;
-    item.currentLocation = '';
+    // We only clear the holder if they return everything, but for simplicity let's just clear it if requested or leave it.
+    // Actually, setting to null is fine if it's meant to signify it's back in stock.
+    if (newQuantity >= (item.minimumQuantity || 1)) {
+       item.currentHolder = null;
+       item.currentLocation = '';
+    }
     item.condition = condition || item.condition;
 
     // Auto-update status based on condition

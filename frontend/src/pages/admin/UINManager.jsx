@@ -35,11 +35,13 @@ export default function UINManager() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this UIN?')) {
+    const pwd = window.prompt('Enter deletion password:');
+    if (pwd) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/uins/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/uins/${id}`, { data: { password: pwd } });
         fetchUins();
       } catch (error) {
+        alert(error.response?.data?.message || 'Error deleting UIN');
         console.error('Error deleting UIN:', error);
       }
     }

@@ -5,7 +5,7 @@ export default function Returns() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [formData, setFormData] = useState({
-    itemId: '', condition: 'Good', remarks: ''
+    itemId: '', quantity: '1', condition: 'Good', remarks: ''
   });
   const [loading, setLoading] = useState(false);
 
@@ -14,9 +14,9 @@ export default function Returns() {
       try {
         const res = await fetch('/api/inventory/items');
         const data = await res.json();
-        // Only show non-consumables that are currently assigned
+        // Show all non-consumables, allowing any to be returned
         if (data.success) {
-           const assignedAssets = data.items.filter(i => i.type === 'Non-Consumable' && i.status === 'Assigned');
+           const assignedAssets = data.items.filter(i => i.type === 'Non-Consumable');
            setItems(assignedAssets);
         }
       } catch (err) {
@@ -60,7 +60,7 @@ export default function Returns() {
           <div>
             <label className="block text-sm font-medium mb-1">Select Asset to Return *</label>
             <select required value={formData.itemId} onChange={e => setFormData({...formData, itemId: e.target.value})} className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2">
-              <option value="">-- Choose Assigned Asset --</option>
+              <option value="">-- Choose Asset --</option>
               {items.map(i => (
                 <option key={i._id} value={i._id}>{i.name} ({i.assetId || i.itemCode}) - With: {i.currentHolder?.name || 'Unknown'}</option>
               ))}
@@ -74,6 +74,10 @@ export default function Returns() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Quantity *</label>
+              <input required type="number" min="1" max="9999" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2" />
+            </div>
             <div>
               <label className="block text-sm font-medium mb-1">Return Condition *</label>
               <select required value={formData.condition} onChange={e => setFormData({...formData, condition: e.target.value})} className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2">

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Users, BookOpen, Key, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import HistoryTab from '../../components/HistoryTab';
+import { AuthContext } from '../../context/AuthContext';
 
 export default function Dashboard() {
+  const { user } = useContext(AuthContext);
   const [stats, setStats] = useState({
     candidates: 0,
     batches: 0,
@@ -39,7 +41,7 @@ export default function Dashboard() {
     { title: 'Total Candidates', value: stats.candidates, icon: Users, color: 'bg-blue-500', link: '/admin/candidates' },
     { title: 'Active Batches', value: stats.batches, icon: BookOpen, color: 'bg-indigo-500', link: '/admin/batches' },
     { title: 'Available UINs', value: stats.uinsAvailable, icon: Key, color: 'bg-emerald-500', link: '/admin/uins' },
-    { title: 'Generated Certs', value: stats.certificates, icon: FileText, color: 'bg-amber-500', link: '/admin/certificates' }
+    ...(user?.role !== 'rpto-head' ? [{ title: 'Generated Certs', value: stats.certificates, icon: FileText, color: 'bg-amber-500', link: '/admin/certificates' }] : [])
   ];
 
   return (
@@ -74,10 +76,12 @@ export default function Dashboard() {
       </div>
 
       {/* History Section */}
-      <div className="mt-8">
-        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 px-1">Recent Certificate History</h3>
-        <HistoryTab backendOnline={true} theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'} />
-      </div>
+      {user?.role !== 'rpto-head' && (
+        <div className="mt-8">
+          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 px-1">Recent Certificate History</h3>
+          <HistoryTab backendOnline={true} theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'} />
+        </div>
+      )}
     </div>
   );
 }
