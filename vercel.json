@@ -18,13 +18,19 @@
       }
     },
     {
-      "source": "/((?!api).*).html",
+      "source": "/assets/:path*",
       "destination": {
         "service": "frontend"
       }
     },
     {
-      "source": "/((?!api).*)",
+      "source": "/((?!api|assets).*).:ext",
+      "destination": {
+        "service": "frontend"
+      }
+    },
+    {
+      "source": "/((?!api|assets).*)",
       "destination": {
         "service": "frontend"
       }
