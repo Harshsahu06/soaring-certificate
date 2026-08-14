@@ -18,19 +18,7 @@
       }
     },
     {
-      "source": "/assets/:path*",
-      "destination": {
-        "service": "frontend"
-      }
-    },
-    {
-      "source": "/((?!api|assets).*).:ext",
-      "destination": {
-        "service": "frontend"
-      }
-    },
-    {
-      "source": "/((?!api|assets).*)",
+      "source": "/:path*",
       "destination": {
         "service": "frontend"
       }
