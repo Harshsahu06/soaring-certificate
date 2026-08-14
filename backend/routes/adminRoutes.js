@@ -7,6 +7,10 @@ import Certificate from '../models/Certificate.js';
 import TemplateConfig from '../models/TemplateConfig.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 import { generateCertificatePdf } from '../pdfEngine.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
@@ -151,6 +155,31 @@ router.get('/next-sequence', async (req, res) => {
   }
 });
 
+router.get('/next-rollno', async (req, res) => {
+  try {
+    const currentYear = new Date().getFullYear();
+    const candidates = await Candidate.find({ rollNo: new RegExp(`^SAPL/${currentYear}/DPC/`) }, 'rollNo');
+    
+    let maxSeq = currentYear === 2026 ? 158 : 0; 
+    
+    candidates.forEach(c => {
+      const parts = c.rollNo.split('/');
+      if (parts.length === 4) {
+        const seq = parseInt(parts[3]);
+        if (!isNaN(seq) && seq > maxSeq) {
+          maxSeq = seq;
+        }
+      }
+    });
+    
+    // Default start logic, maybe start from 1
+    const nextSequence = maxSeq + 1;
+    res.json({ rollNo: `SAPL/${currentYear}/DPC/${nextSequence.toString().padStart(3, '0')}` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.post('/generate-certificate', async (req, res) => {
   try {
     const { candidateId, uinId, certificateNo, rollNo, courseName, duration, issueDate, templateFileName = 'default-template.pdf' } = req.body;
@@ -188,7 +217,7 @@ router.post('/generate-certificate', async (req, res) => {
       console.warn('Failed to fetch template config from DB, using frontend cache if available');
     }
 
-    const templatePath = path.join(process.cwd(), 'templates', templateFileName);
+    const templatePath = path.join(__dirname, '..', 'templates', templateFileName);
     const pdfBytes = await generateCertificatePdf(certData, templatePath, customConfig);
 
     // Save record to DB

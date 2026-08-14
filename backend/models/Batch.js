@@ -6,6 +6,8 @@ const BatchSchema = new mongoose.Schema({
   groundClassTo: { type: String, required: true },
   simulatorFrom: { type: String, required: true },
   simulatorTo: { type: String, required: true },
+  flyingClassFrom: { type: String, required: true },
+  flyingClassTo: { type: String, required: true },
   status: { type: String, enum: ['active', 'completed'], default: 'active' },
 }, { timestamps: true });
 

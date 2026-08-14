@@ -12,7 +12,6 @@ export default function CertificateGen() {
     uinId: '',
     certificateNo: '',
     rollNo: '',
-    courseName: 'Small Class Remote Pilot Certificate',
     duration: '5 Days',
     issueDate: new Date().toLocaleDateString('en-GB'),
     templateFileName: 'Small Certificate template.pdf'
@@ -39,8 +38,7 @@ export default function CertificateGen() {
         const { nextSequence, year } = seqRes.data;
         setFormData(prev => ({
           ...prev,
-          certificateNo: `SAPL/${year}/${nextSequence}`,
-          rollNo: `SAPL/${year}/DPC/${nextSequence}`
+          certificateNo: `SAPL/${year}/${nextSequence}`
         }));
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -58,8 +56,7 @@ export default function CertificateGen() {
     setFormData(prev => ({ 
       ...prev, 
       candidateId,
-      // If candidate already has a rollNo, you might want to show it, else keep default
-      ...(candidate?.rollNo ? { rollNo: candidate.rollNo } : {})
+      rollNo: candidate?.rollNo || ''
     }));
   };
 
@@ -102,7 +99,7 @@ export default function CertificateGen() {
         ...formData, 
         candidateId: '', 
         certificateNo: `SAPL/${year}/${nextSequence}`,
-        rollNo: `SAPL/${year}/DPC/${nextSequence}`
+        rollNo: ''
       });
 
     } catch (error) {
@@ -173,12 +170,6 @@ export default function CertificateGen() {
               <label className="block text-sm font-medium mb-2 dark:text-slate-300">Issue Date</label>
               <input required type="text" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                 value={formData.issueDate} onChange={e => setFormData({ ...formData, issueDate: e.target.value })} />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Course Name</label>
-              <input required type="text" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-                value={formData.courseName} onChange={e => setFormData({ ...formData, courseName: e.target.value })} />
             </div>
 
             <div>

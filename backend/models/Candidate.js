@@ -27,7 +27,7 @@ const CandidateSchema = new mongoose.Schema({
   // References
   batch: { type: mongoose.Schema.Types.ObjectId, ref: 'Batch', required: true },
   uin: { type: String, default: null }, // Assigned later during cert gen
-  rollNo: { type: String, default: null }, // Roll no for the batch
+  rollNo: { type: String, default: null, unique: true, sparse: true }, // Roll no for the batch
 
   // Certificate relation
   certificate: { type: mongoose.Schema.Types.ObjectId, ref: 'Certificate', default: null },

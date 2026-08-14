@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Users, BookOpen, Key, FileText, LogOut, LayoutDashboard, Sliders, Package } from 'lucide-react';
 
@@ -15,16 +15,21 @@ export default function AdminLayout() {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'Inventory', path: '/admin/inventory/dashboard', icon: Package },
+    ...(user?.role !== 'rpto-head' ? [{ name: 'Inventory', path: '/admin/inventory/dashboard', icon: Package }] : []),
     { name: 'Batches', path: '/admin/batches', icon: BookOpen },
     { name: 'Candidates', path: '/admin/candidates', icon: Users },
     { name: 'UIN Manager', path: '/admin/uins', icon: Key },
     { name: 'Certificates', path: '/admin/certificates', icon: FileText },
-    { name: 'Template Settings', path: '/admin/template-settings', icon: Sliders },
+    ...(user?.role !== 'rpto-head' ? [{ name: 'Template Settings', path: '/admin/template-settings', icon: Sliders }] : []),
   ];
 
   if (!user) {
     return <div className="p-8 text-center">Loading...</div>; // Could redirect to login here, but protected route component is better
+  }
+
+  // Role-based route protection
+  if (user.role === 'rpto-head' && (location.pathname.includes('/inventory') || location.pathname.includes('/template-settings'))) {
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
   return (

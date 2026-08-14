@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const CertificateSchema = new mongoose.Schema(
   {
     candidateName: { type: String, required: true, trim: true },
-    courseName: { type: String, required: true, trim: true },
+    courseName: { type: String, required: false, trim: true },
     duration: { type: String, default: '' },
     issueDate: { type: String, default: '' },
     certificateNo: { type: String, required: true, trim: true, index: true },
