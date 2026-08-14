@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Outlet, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Users, BookOpen, Key, FileText, LogOut, LayoutDashboard, Sliders, Package } from 'lucide-react';
+import { Users, BookOpen, Key, FileText, LogOut, LayoutDashboard, Sliders, Package, Database } from 'lucide-react';
 
 export default function AdminLayout() {
   const { user, logout } = useContext(AuthContext);
@@ -20,6 +20,7 @@ export default function AdminLayout() {
     { name: 'Candidates', path: '/admin/candidates', icon: Users },
     { name: 'UIN Manager', path: '/admin/uins', icon: Key },
     { name: 'Certificates', path: '/admin/certificates', icon: FileText },
+    { name: 'Certificate History', path: '/admin/history', icon: Database },
     ...(user?.role !== 'rpto-head' ? [{ name: 'Template Settings', path: '/admin/template-settings', icon: Sliders }] : []),
   ];
 

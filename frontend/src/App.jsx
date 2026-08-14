@@ -63,6 +63,7 @@ export default function App() {
               <Route path="candidates" element={<Candidates />} />
               <Route path="uins" element={<UINManager />} />
               <Route path="certificates" element={<CertificateGen />} />
+              <Route path="history" element={<HistoryTab backendOnline={true} theme={theme} />} />
               <Route path="template-settings" element={<TemplateSettings />} />
 
               {/* Inventory Routes */}

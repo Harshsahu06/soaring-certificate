@@ -278,6 +278,12 @@ app.post('/api/generate-single', async (req, res) => {
           certificateNo,
           templateName: templateFileName,
           generationType: 'single',
+          rollNo,
+          uin,
+          groundFrom,
+          groundTo,
+          simulatorFrom,
+          simulatorTo
         });
       } catch (dbErr) {
         console.warn('Failed to save certificate record to MongoDB:', dbErr.message);
@@ -403,6 +409,12 @@ app.post('/api/generate-bulk', async (req, res) => {
         certificateNo,
         templateName: templateFileName,
         generationType: 'bulk',
+        rollNo: rec.rollNo || '',
+        uin: rec.uin || '',
+        groundFrom: rec.groundFrom || '',
+        groundTo: rec.groundTo || '',
+        simulatorFrom: rec.simulatorFrom || '',
+        simulatorTo: rec.simulatorTo || ''
       });
     }
 

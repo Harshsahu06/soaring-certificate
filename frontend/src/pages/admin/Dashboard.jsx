@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Users, BookOpen, Key, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import HistoryTab from '../../components/HistoryTab';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -70,6 +71,12 @@ export default function Dashboard() {
             Issue Certificate
           </Link>
         </div>
+      </div>
+
+      {/* History Section */}
+      <div className="mt-8">
+        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 px-1">Recent Certificate History</h3>
+        <HistoryTab backendOnline={true} theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'} />
       </div>
     </div>
   );

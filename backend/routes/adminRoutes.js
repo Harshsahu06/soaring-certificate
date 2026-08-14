@@ -228,7 +228,13 @@ router.post('/generate-certificate', async (req, res) => {
       issueDate,
       certificateNo,
       templateName: templateFileName,
-      generationType: 'single'
+      generationType: 'single',
+      rollNo: certData.rollNo,
+      uin: certData.uin,
+      groundFrom: certData.groundFrom,
+      groundTo: certData.groundTo,
+      simulatorFrom: certData.simulatorFrom,
+      simulatorTo: certData.simulatorTo
     });
 
     // Update candidate's rollNo if provided
