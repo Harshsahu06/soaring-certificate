@@ -18,7 +18,13 @@
       }
     },
     {
-      "source": "/:path*",
+      "source": "/((?!api).*).html",
+      "destination": {
+        "service": "frontend"
+      }
+    },
+    {
+      "source": "/((?!api).*)",
       "destination": {
         "service": "frontend"
       }
