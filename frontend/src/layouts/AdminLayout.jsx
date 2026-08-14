@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Users, BookOpen, Key, FileText, LogOut, LayoutDashboard, Sliders } from 'lucide-react';
+import { Users, BookOpen, Key, FileText, LogOut, LayoutDashboard, Sliders, Package } from 'lucide-react';
 
 export default function AdminLayout() {
   const { user, logout } = useContext(AuthContext);
@@ -15,6 +15,7 @@ export default function AdminLayout() {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+    { name: 'Inventory', path: '/admin/inventory/dashboard', icon: Package },
     { name: 'Batches', path: '/admin/batches', icon: BookOpen },
     { name: 'Candidates', path: '/admin/candidates', icon: Users },
     { name: 'UIN Manager', path: '/admin/uins', icon: Key },

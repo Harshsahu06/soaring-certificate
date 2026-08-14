@@ -15,6 +15,7 @@ import { generateCertificatePdf, DEFAULT_FIELD_CONFIGS, SMALL_CERTIFICATE_CONFIG
 
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import inventoryRoutes from './routes/inventoryRoutes.js';
 
 dotenv.config();
 
@@ -105,6 +106,7 @@ connectDB().then((connected) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // Health Check with DB Status
 app.get('/api/health', (req, res) => {

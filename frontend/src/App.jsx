@@ -12,6 +12,16 @@ import UINManager from './pages/admin/UINManager';
 import CertificateGen from './pages/admin/CertificateGen';
 import TemplateSettings from './pages/admin/TemplateSettings';
 
+// Inventory Pages
+import InventoryDashboard from './pages/admin/inventory/Dashboard';
+import ItemsMaster from './pages/admin/inventory/ItemsMaster';
+import StockIn from './pages/admin/inventory/StockIn';
+import IssueStock from './pages/admin/inventory/IssueStock';
+import Returns from './pages/admin/inventory/Returns';
+import TransactionHistory from './pages/admin/inventory/TransactionHistory';
+import People from './pages/admin/inventory/People';
+import Categories from './pages/admin/inventory/Categories';
+
 // Legacy Tools
 import SingleGen from './components/SingleGen';
 import BulkGen from './components/BulkGen';
@@ -54,6 +64,16 @@ export default function App() {
               <Route path="uins" element={<UINManager />} />
               <Route path="certificates" element={<CertificateGen />} />
               <Route path="template-settings" element={<TemplateSettings />} />
+
+              {/* Inventory Routes */}
+              <Route path="inventory/dashboard" element={<InventoryDashboard />} />
+              <Route path="inventory/items" element={<ItemsMaster />} />
+              <Route path="inventory/stock-in" element={<StockIn />} />
+              <Route path="inventory/issue" element={<IssueStock />} />
+              <Route path="inventory/returns" element={<Returns />} />
+              <Route path="inventory/history" element={<TransactionHistory />} />
+              <Route path="inventory/people" element={<People />} />
+              <Route path="inventory/categories" element={<Categories />} />
 
               {/* Legacy Tools can be accessed via URL for now if needed, or added to sidebar later */}
               <Route path="tools/single" element={<SingleGen templates={[]} theme={theme} />} />
