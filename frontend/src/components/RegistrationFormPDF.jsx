@@ -5,11 +5,11 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
 
   return (
     <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
-      <div ref={ref} style={{
+      <div ref={ref} className="reg-form-wrapper" style={{
         fontFamily: 'Arial, sans-serif',
         color: '#000',
         margin: '0',
-        padding: '10mm',
+        padding: '0',
         fontSize: '12px',
         lineHeight: '1.3',
         width: '100%',
@@ -20,13 +20,15 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
           {`
             @media print {
               @page { size: A4; margin: 0; }
-              body { -webkit-print-color-adjust: exact; }
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              .reg-form-wrapper { page-break-inside: avoid; padding: 25mm 30mm mm 15mm; box-sizing: border-box; }
+              .reg-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 11px; font-style: italic; padding: 6px 0; }
             }
           `}
         </style>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '25px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '25px', marginTop: '35px' }}>
           {/* Logo */}
           <div style={{ width: '110px', flexShrink: 0, marginRight: '20px' }}>
             <img src={logo} alt="Soaring Logo" style={{ width: '100%', height: 'auto' }} onError={(e) => e.target.style.display = 'none'} />
@@ -151,24 +153,13 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
         <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '12px' }}>
           <div>
             <p style={{ margin: '5px 0' }}>Place of Signing: <strong>______________________</strong></p>
-            <br></br>
-
-
-            <p style={{ margin: '5px 0' }}>Signature: ______________________</p>
+            <p style={{ margin: '20px 0 5px 0' }}>Signature: ______________________</p>
           </div>
           <div style={{ textAlign: 'right' }}>
             <p style={{ margin: '5px 0' }}>Date: <strong>______________________</strong></p>
           </div>
         </div>
-
-
-
-
-
-
-
-
-        <div style={{ marginTop: '30px', textAlign: 'center', fontSize: '11px', fontStyle: 'italic', paddingTop: '8px' }}>
+        <div className="reg-footer" style={{ textAlign: 'center', fontSize: '11px', fontStyle: 'italic' }}>
           Soaring Aerotech Pvt Ltd / info@soaringaerotech.com / www.soaringaerotech.com
         </div>
       </div>
