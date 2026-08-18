@@ -17,14 +17,14 @@ export default function TemplateSettings() {
     uin: 'UA12345678',
     courseName: 'Drone Pilot Training',
     duration: '10 Days',
-    issueDate: '10 Jan 2026'
+    issueDate: '10/01/2026'
   });
 
   const [savedConfigsMap, setSavedConfigsMap] = useState({});
 
   const fetchTemplates = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/templates`);
+      const res = await axios.get(`/api/templates`);
       setTemplates(res.data.templates || []);
 
       const dbConfigs = res.data.savedConfigs || {};

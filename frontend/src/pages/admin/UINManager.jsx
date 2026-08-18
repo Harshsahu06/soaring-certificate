@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Key } from 'lucide-react';
+import { Plus, Trash2, Key, Loader2 } from 'lucide-react';
 
 export default function UINManager() {
   const [uins, setUins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newUin, setNewUin] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchUins = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/uins`);
+      const { data } = await axios.get(`/api/admin/uins`);
       setUins(data);
     } catch (error) {
       console.error('Error fetching UINs:', error);
@@ -26,11 +28,14 @@ export default function UINManager() {
     e.preventDefault();
     if (!newUin.trim()) return;
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/uins`, { uinNumber: newUin });
+      setIsSubmitting(true);
+      await axios.post(`/api/admin/uins`, { uinNumber: newUin });
       setNewUin('');
       fetchUins();
     } catch (error) {
       alert(error.response?.data?.message || 'Error adding UIN');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -38,11 +43,14 @@ export default function UINManager() {
     const pwd = window.prompt('Enter deletion password:');
     if (pwd) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/uins/${id}`, { data: { password: pwd } });
+        setDeletingId(id);
+        await axios.delete(`/api/admin/uins/${id}`, { data: { password: pwd } });
         fetchUins();
       } catch (error) {
         alert(error.response?.data?.message || 'Error deleting UIN');
         console.error('Error deleting UIN:', error);
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -65,8 +73,9 @@ export default function UINManager() {
             value={newUin}
             onChange={(e) => setNewUin(e.target.value)}
           />
-          <button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap">
-            <Plus className="w-5 h-5" /> Add UIN
+          <button type="submit" className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap disabled:opacity-50" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />} 
+            {isSubmitting ? 'Adding...' : 'Add UIN'}
           </button>
         </form>
       </div>
@@ -82,7 +91,7 @@ export default function UINManager() {
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
             {loading ? (
-              <tr><td colSpan="4" className="p-4 text-center">Loading...</td></tr>
+              <tr><td colSpan="3" className="p-4 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-amber-500" /></td></tr>
             ) : uins.length === 0 ? (
               <tr><td colSpan="4" className="p-4 text-center text-slate-500">No UINs found</td></tr>
             ) : (
@@ -95,8 +104,12 @@ export default function UINManager() {
                     </span>
                   </td>
                   <td className="p-4 text-right">
-                    <button onClick={() => handleDelete(uin._id)} className="text-red-500 hover:text-red-700 p-2">
-                      <Trash2 className="w-5 h-5" />
+                    <button onClick={() => handleDelete(uin._id)} className="text-red-500 hover:text-red-700 p-2 disabled:opacity-50" disabled={deletingId === uin._id}>
+                      {deletingId === uin._id ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-5 h-5" />
+                      )}
                     </button>
                   </td>
                 </tr>

@@ -19,23 +19,23 @@ function hexToRgb(hex) {
 
 // Default layout coordinates for General Certificate
 export const DEFAULT_FIELD_CONFIGS = {
-  candidateName: { x: 420.94, y: 375, fontSize: 32, font: 'Helvetica-Bold', color: '#dc2626', align: 'center' },
-  courseName: { x: 420.94, y: 275, fontSize: 10, font: 'Helvetica-Bold', color: '#d97706', align: 'center' },
-  duration: { x: 200, y: 120, fontSize: 11, font: 'Helvetica', color: '#374151', align: 'center' },
-  issueDate: { x: 200, y: 140, fontSize: 12, font: 'Helvetica-Bold', color: '#111827', align: 'center' },
-  certificateNo: { x: 730, y: 540, fontSize: 11, font: 'Helvetica-Bold', color: '#4b5563', align: 'right' },
+  candidateName: { x: 420.94, y: 375, fontSize: 32, font: 'Arial-Bold', color: '#dc2626', align: 'center' },
+  courseName: { x: 420.94, y: 275, fontSize: 10, font: 'Arial-Bold', color: '#d97706', align: 'center' },
+  duration: { x: 200, y: 120, fontSize: 11, font: 'Geometric-Sans', color: '#374151', align: 'center' },
+  issueDate: { x: 200, y: 140, fontSize: 12, font: 'Geometric-Sans-Bold', color: '#111827', align: 'center' },
+  certificateNo: { x: 730, y: 540, fontSize: 11, font: 'Geometric-Sans-Bold', color: '#4b5563', align: 'right' },
 };
 
 // Preset field coordinates for Small & Medium RPTO Certificate templates
 export const RPTO_CERTIFICATE_CONFIGS = {
-  candidateName: { x: 421, y: 278, fontSize: 24, font: 'Helvetica-Bold', align: 'center', color: '#dc2626' },
-  rollNo: { x: 355, y: 248, fontSize: 14, font: 'Helvetica', align: 'left', color: '#000000' },
-  groundFrom: { x: 375, y: 190, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-  groundTo: { x: 495, y: 190, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-  simulatorFrom: { x: 425, y: 168, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-  simulatorTo: { x: 545, y: 168, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-  certificateNo: { x: 410, y: 120, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
-  uin: { x: 385, y: 96, fontSize: 13, font: 'Helvetica', align: 'left', color: '#000000' },
+  candidateName: { x: 421, y: 278, fontSize: 24, font: 'Arial-Bold', align: 'center', color: '#dc2626' },
+  rollNo: { x: 355, y: 248, fontSize: 14, font: 'Geometric-Sans', align: 'left', color: '#000000' },
+  groundFrom: { x: 375, y: 190, fontSize: 13, font: 'Geometric-Sans', align: 'left', color: '#000000' },
+  groundTo: { x: 495, y: 190, fontSize: 13, font: 'Geometric-Sans', align: 'left', color: '#000000' },
+  simulatorFrom: { x: 425, y: 168, fontSize: 13, font: 'Geometric-Sans', align: 'left', color: '#000000' },
+  simulatorTo: { x: 545, y: 168, fontSize: 13, font: 'Geometric-Sans', align: 'left', color: '#000000' },
+  certificateNo: { x: 410, y: 120, fontSize: 13, font: 'Geometric-Sans', align: 'left', color: '#000000' },
+  uin: { x: 385, y: 96, fontSize: 13, font: 'Geometric-Sans', align: 'left', color: '#000000' },
 };
 
 export const SMALL_CERTIFICATE_CONFIGS = RPTO_CERTIFICATE_CONFIGS;
@@ -97,6 +97,9 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
       customFonts['Arial-Bold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Arimo-Bold.ttf')));
       customFonts['Geometric-Sans'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-Regular.ttf')));
       customFonts['Geometric-Sans-Bold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-Bold.ttf')));
+      if (fs.existsSync(path.join(fontsDir, 'Montserrat-SemiBold.ttf'))) {
+        customFonts['Geometric-Sans-SemiBold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-SemiBold.ttf')));
+      }
     }
   } catch (err) {
     console.warn('Failed to load custom TTF fonts, falling back to standard fonts.', err);
@@ -118,6 +121,7 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
   fonts['Arial-Bold'] = customFonts['Arial-Bold'] || fonts['Helvetica-Bold'];
   fonts['Geometric-Sans'] = customFonts['Geometric-Sans'] || fonts['Helvetica'];
   fonts['Geometric-Sans-Bold'] = customFonts['Geometric-Sans-Bold'] || fonts['Helvetica-Bold'];
+  fonts['Geometric-Sans-SemiBold'] = customFonts['Geometric-Sans-SemiBold'] || fonts['Helvetica-Bold'];
 
   // Helper to draw text for any field defined in config
   const drawFieldText = (key, textValue) => {
@@ -125,7 +129,14 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
     const fieldConf = config[key];
     if (!fieldConf) return;
 
-    const fontObj = fonts[fieldConf.font] || fonts['Helvetica'];
+    let fontKey = fieldConf.font || 'Helvetica';
+    if (fieldConf.fontWeight === 'bold' && !fontKey.includes('Bold')) {
+      if (fonts[`${fontKey}-Bold`]) fontKey = `${fontKey}-Bold`;
+    } else if (fieldConf.fontWeight === 'semibold' && !fontKey.includes('SemiBold')) {
+      if (fonts[`${fontKey}-SemiBold`]) fontKey = `${fontKey}-SemiBold`;
+    }
+
+    const fontObj = fonts[fontKey] || fonts[fieldConf.font] || fonts['Helvetica'];
     const size = Number(fieldConf.fontSize) || 16;
     const colorObj = hexToRgb(fieldConf.color || '#000000');
 

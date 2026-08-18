@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Edit, FileText } from 'lucide-react';
+import { Plus, Trash2, Edit, FileText, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logoSrc from '../../assets/soaring-logo.png';
@@ -10,6 +10,9 @@ export default function Batches() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
   const [formData, setFormData] = useState({
     batchName: '',
     groundClassFrom: '',
@@ -23,7 +26,7 @@ export default function Batches() {
 
   const fetchBatches = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/batches`);
+      const { data } = await axios.get(`/api/admin/batches`);
       setBatches(data);
     } catch (error) {
       console.error('Error fetching batches:', error);
@@ -39,10 +42,11 @@ export default function Batches() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true);
       if (editingId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/batches/${editingId}`, formData);
+        await axios.put(`/api/admin/batches/${editingId}`, formData);
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/batches`, formData);
+        await axios.post(`/api/admin/batches`, formData);
       }
       setShowModal(false);
       setEditingId(null);
@@ -52,6 +56,8 @@ export default function Batches() {
       });
     } catch (error) {
       console.error('Error saving batch:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,18 +80,22 @@ export default function Batches() {
     const pwd = window.prompt('Enter deletion password:');
     if (pwd) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/batches/${id}`, { data: { password: pwd } });
+        setDeletingId(id);
+        await axios.delete(`/api/admin/batches/${id}`, { data: { password: pwd } });
         fetchBatches();
       } catch (error) {
         alert(error.response?.data?.message || 'Error deleting batch');
         console.error('Error deleting batch:', error);
+      } finally {
+        setDeletingId(null);
       }
     }
   };
 
   const downloadAttendanceSheet = async (batch) => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/candidates`);
+      setDownloadingId(batch._id);
+      const { data } = await axios.get(`/api/admin/candidates`);
       const batchCandidates = data.filter(c => c.batch && c.batch._id === batch._id);
 
       const dates = [
@@ -203,6 +213,8 @@ export default function Batches() {
     } catch (error) {
       console.error('Error generating attendance sheet:', error);
       alert('Failed to generate attendance sheet');
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -238,7 +250,7 @@ export default function Batches() {
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
             {loading ? (
-              <tr><td colSpan="5" className="p-4 text-center">Loading...</td></tr>
+              <tr><td colSpan="6" className="p-4 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-amber-500" /></td></tr>
             ) : batches.length === 0 ? (
               <tr><td colSpan="5" className="p-4 text-center text-slate-500">No batches found</td></tr>
             ) : (
@@ -265,14 +277,22 @@ export default function Batches() {
                     </span>
                   </td>
                   <td className="p-4 text-right flex justify-end gap-2">
-                    <button onClick={() => downloadAttendanceSheet(batch)} className="text-emerald-500 hover:text-emerald-700 p-2" title="Download Attendance Sheet">
-                      <FileText className="w-5 h-5" />
+                    <button onClick={() => downloadAttendanceSheet(batch)} className="text-emerald-500 hover:text-emerald-700 p-2 disabled:opacity-50" title="Download Attendance Sheet" disabled={downloadingId === batch._id}>
+                      {downloadingId === batch._id ? (
+                         <span className="w-5 h-5 block border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
+                      ) : (
+                         <FileText className="w-5 h-5" />
+                      )}
                     </button>
                     <button onClick={() => handleEdit(batch)} className="text-blue-500 hover:text-blue-700 p-2" title="Edit Batch">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                      <Edit className="w-5 h-5" />
                     </button>
-                    <button onClick={() => handleDelete(batch._id)} className="text-red-500 hover:text-red-700 p-2" title="Delete Batch">
-                      <Trash2 className="w-5 h-5" />
+                    <button onClick={() => handleDelete(batch._id)} className="text-red-500 hover:text-red-700 p-2 disabled:opacity-50" title="Delete" disabled={deletingId === batch._id}>
+                      {deletingId === batch._id ? (
+                         <span className="w-5 h-5 block border-2 border-red-500 border-t-transparent rounded-full animate-spin"></span>
+                      ) : (
+                         <Trash2 className="w-5 h-5" />
+                      )}
                     </button>
                   </td>
                 </tr>
@@ -342,11 +362,12 @@ export default function Batches() {
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800" disabled={isSubmitting}>
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600">
-                  {editingId ? 'Update Batch' : 'Save Batch'}
+                <button type="submit" className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-2" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSubmitting ? 'Processing...' : (editingId ? 'Update Batch' : 'Save Batch')}
                 </button>
               </div>
             </form>

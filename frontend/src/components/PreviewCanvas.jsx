@@ -57,7 +57,7 @@ export default function PreviewCanvas({
 
       try {
         const fileUrl = `/api/templates/file/${encodeURIComponent(selectedTemplate)}`;
-        
+
         // Fetch binary data directly to avoid CORS/Range fetch issues
         const res = await fetch(fileUrl);
         if (!res.ok) {
@@ -248,17 +248,17 @@ export default function PreviewCanvas({
       color: conf.color || '#000000',
       fontSize: `${scaledFontSize}px`,
       lineHeight: '1',
-      fontWeight: conf.font?.includes('Bold') ? '700' : '400',
+      fontWeight: conf.fontWeight === 'bold' ? '700' : conf.fontWeight === 'semibold' ? '600' : conf.font?.includes('SemiBold') ? '600' : conf.font?.includes('Bold') ? '700' : '400',
       fontStyle: conf.font?.includes('Oblique') ? 'italic' : 'normal',
       fontFamily: conf.font?.includes('Times')
         ? 'serif'
         : conf.font?.includes('Courier')
-        ? 'monospace'
-        : conf.font?.includes('Arial')
-        ? 'Arial, sans-serif'
-        : conf.font?.includes('Geometric')
-        ? '"Montserrat", "Poppins", sans-serif'
-        : 'sans-serif',
+          ? 'monospace'
+          : conf.font?.includes('Arial')
+            ? 'Arial, sans-serif'
+            : conf.font?.includes('Geometric')
+              ? '"Montserrat", "Poppins", sans-serif'
+              : 'sans-serif',
       textAlign: conf.align || 'left',
       whiteSpace: 'nowrap',
     };
@@ -286,21 +286,19 @@ export default function PreviewCanvas({
         <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-1">
           <button
             onClick={() => setPreviewMode('canvas')}
-            className={`px-3 py-1 rounded-md font-medium text-[11px] transition-all flex items-center gap-1 ${
-              previewMode === 'canvas'
-                ? 'bg-amber-500 text-slate-950 font-bold shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`px-3 py-1 rounded-md font-medium text-[11px] transition-all flex items-center gap-1 ${previewMode === 'canvas'
+              ? 'bg-amber-500 text-slate-950 font-bold shadow'
+              : 'text-slate-400 hover:text-slate-200'
+              }`}
           >
             <Eye className="w-3 h-3" /> Drag Canvas
           </button>
           <button
             onClick={() => setPreviewMode('pdf')}
-            className={`px-3 py-1 rounded-md font-medium text-[11px] transition-all flex items-center gap-1 ${
-              previewMode === 'pdf'
-                ? 'bg-amber-500 text-slate-950 font-bold shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`px-3 py-1 rounded-md font-medium text-[11px] transition-all flex items-center gap-1 ${previewMode === 'pdf'
+              ? 'bg-amber-500 text-slate-950 font-bold shadow'
+              : 'text-slate-400 hover:text-slate-200'
+              }`}
           >
             <FileText className="w-3 h-3" /> Live Server PDF
           </button>
@@ -318,9 +316,8 @@ export default function PreviewCanvas({
           {!isDefaultTemplate && !isImageTemplate && (
             <canvas
               ref={canvasRef}
-              className={`absolute inset-0 w-full h-full object-contain pointer-events-none ${
-                pdfRenderedSuccess ? 'block' : 'hidden'
-              }`}
+              className={`absolute inset-0 w-full h-full object-contain pointer-events-none ${pdfRenderedSuccess ? 'block' : 'hidden'
+                }`}
             />
           )}
 
@@ -381,7 +378,7 @@ export default function PreviewCanvas({
             </div>
           )}
 
-          {/* Removed Crosshair Guidelines to reduce clutter */ }
+          {/* Removed Crosshair Guidelines to reduce clutter */}
 
           {/* Dynamic Field Overlays with Drag Handlers */}
           {Object.keys(fieldConfigs).map((fieldKey) => {
@@ -399,11 +396,10 @@ export default function PreviewCanvas({
                 style={style}
                 onMouseDown={(e) => handleMouseDown(fieldKey, e)}
                 onTouchStart={(e) => handleMouseDown(fieldKey, e)}
-                className={`absolute pointer-events-auto cursor-grab active:cursor-grabbing px-0 py-0 rounded transition-all z-20 ${
-                  isActive
-                    ? 'z-30 drop-shadow-md cursor-grabbing'
-                    : 'hover:ring-1 hover:ring-slate-500/30'
-                }`}
+                className={`absolute pointer-events-auto cursor-grab active:cursor-grabbing px-0 py-0 rounded transition-all z-20 ${isActive
+                  ? 'z-30 drop-shadow-md cursor-grabbing'
+                  : 'hover:ring-1 hover:ring-slate-500/30'
+                  }`}
               >
                 <span>{val}</span>
 

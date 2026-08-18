@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Printer } from 'lucide-react';
+import { Plus, Trash2, Printer, Loader2 } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import RegistrationFormPDF from '../../components/RegistrationFormPDF';
 
@@ -12,6 +12,10 @@ export default function Candidates() {
   const [selectedCandidateToPrint, setSelectedCandidateToPrint] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingId, setEditingId] = useState(null);
+  
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const printRef = useRef();
 
@@ -49,8 +53,8 @@ export default function Candidates() {
   const fetchData = async () => {
     try {
       const [candRes, batchRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/candidates`),
-        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/batches`)
+        axios.get(`/api/admin/candidates`),
+        axios.get(`/api/admin/batches`)
       ]);
       setCandidates(candRes.data);
       setBatches(batchRes.data);
@@ -67,14 +71,15 @@ export default function Candidates() {
 
   const saveDraft = async () => {
     try {
+      setIsSavingDraft(true);
       const dataToSave = { ...formData, status: 'Draft' };
       if (!dataToSave.batch) {
         delete dataToSave.batch;
       }
       if (editingId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${editingId}`, dataToSave);
+        await axios.put(`/api/admin/candidates/${editingId}`, dataToSave);
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/candidates`, dataToSave);
+        await axios.post(`/api/admin/candidates`, dataToSave);
       }
       setShowModal(false);
       setEditingId(null);
@@ -88,6 +93,8 @@ export default function Candidates() {
       });
     } catch (error) {
       console.error('Error saving draft:', error);
+    } finally {
+      setIsSavingDraft(false);
     }
   };
 
@@ -95,11 +102,12 @@ export default function Candidates() {
     e.preventDefault();
     if (!formData.batch) return alert("Please select a batch");
     try {
+      setIsSubmitting(true);
       const dataToSave = { ...formData, status: 'Completed' };
       if (editingId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${editingId}`, dataToSave);
+        await axios.put(`/api/admin/candidates/${editingId}`, dataToSave);
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/candidates`, dataToSave);
+        await axios.post(`/api/admin/candidates`, dataToSave);
       }
       setShowModal(false);
       setEditingId(null);
@@ -113,6 +121,8 @@ export default function Candidates() {
       });
     } catch (error) {
       console.error('Error saving candidate:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -152,11 +162,14 @@ export default function Candidates() {
     const pwd = window.prompt('Enter deletion password:');
     if (pwd) {
       try {
-        await axios.delete(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${id}`, { data: { password: pwd } });
+        setDeletingId(id);
+        await axios.delete(`/api/admin/candidates/${id}`, { data: { password: pwd } });
         fetchData();
       } catch (error) {
         alert(error.response?.data?.message || 'Error deleting candidate');
         console.error('Error deleting candidate:', error);
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -178,7 +191,7 @@ export default function Candidates() {
               setEditingId(null);
               let newRollNo = '';
               try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/next-rollno`);
+                const res = await axios.get(`/api/admin/next-rollno`);
                 newRollNo = res.data.rollNo;
               } catch (e) {
                 console.error(e);
@@ -214,7 +227,7 @@ export default function Candidates() {
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {loading ? (
-                <tr><td colSpan="5" className="p-4 text-center">Loading...</td></tr>
+                <tr><td colSpan="6" className="p-4 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-amber-500" /></td></tr>
               ) : filteredCandidates.length === 0 ? (
                 <tr><td colSpan="5" className="p-4 text-center text-slate-500">No candidates found</td></tr>
               ) : (
@@ -242,8 +255,12 @@ export default function Candidates() {
                       <button onClick={() => triggerPrint(candidate)} className="text-amber-500 hover:text-amber-700 p-2" title="Print Registration Form">
                         <Printer className="w-5 h-5" />
                       </button>
-                      <button onClick={() => handleDelete(candidate._id)} className="text-red-500 hover:text-red-700 p-2" title="Delete">
-                        <Trash2 className="w-5 h-5" />
+                      <button onClick={() => handleDelete(candidate._id)} className="text-red-500 hover:text-red-700 p-2 disabled:opacity-50" title="Delete" disabled={deletingId === candidate._id}>
+                        {deletingId === candidate._id ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-5 h-5" />
+                        )}
                       </button>
                     </td>
                   </tr>
@@ -339,14 +356,16 @@ export default function Candidates() {
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t dark:border-slate-700">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800" disabled={isSavingDraft || isSubmitting}>
                   Cancel
                 </button>
-                <button type="button" onClick={saveDraft} className="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
-                  Save as Draft
+                <button type="button" onClick={saveDraft} className="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 disabled:opacity-50 flex items-center justify-center gap-2" disabled={isSavingDraft || isSubmitting}>
+                  {isSavingDraft && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSavingDraft ? 'Saving...' : 'Save as Draft'}
                 </button>
-                <button type="submit" className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600">
-                  {editingId ? 'Update Candidate' : 'Save Candidate'}
+                <button type="submit" className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-50 flex items-center justify-center gap-2" disabled={isSavingDraft || isSubmitting}>
+                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSubmitting ? 'Processing...' : (editingId ? 'Update Candidate' : 'Save Candidate')}
                 </button>
               </div>
             </form>

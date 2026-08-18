@@ -18,10 +18,10 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         const [candRes, batchRes, uinRes, certRes] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/candidates`),
-          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/batches`),
-          axios.get(`${import.meta.env.VITE_API_URL}/api/admin/uins`),
-          axios.get(`${import.meta.env.VITE_API_URL}/api/certificates`)
+          axios.get(`/api/admin/candidates`),
+          axios.get(`/api/admin/batches`),
+          axios.get(`/api/admin/uins`),
+          axios.get(`/api/certificates`)
         ]);
         
         setStats({

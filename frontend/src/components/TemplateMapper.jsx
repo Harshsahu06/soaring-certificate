@@ -44,7 +44,8 @@ export default function TemplateMapper({
     'Arial',
     'Arial-Bold',
     'Geometric-Sans',
-    'Geometric-Sans-Bold'
+    'Geometric-Sans-Bold',
+    'Geometric-Sans-SemiBold'
   ];
 
   const handleConfigChange = (field, key, value) => {
@@ -600,22 +601,39 @@ export default function TemplateMapper({
               </div>
             </div>
 
-            {/* Font Family */}
-            <div>
-              <label className={labelStyle}>
-                <Type className="w-3.5 h-3.5 text-amber-500" /> Font Family
-              </label>
-              <select
-                value={currentConf.font || 'Helvetica'}
-                onChange={(e) => handleConfigChange(activeField, 'font', e.target.value)}
-                className={selectStyle}
-              >
-                {fontsList.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
-                ))}
-              </select>
+            {/* Font Config */}
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className={labelStyle}>
+                  <Type className="w-3.5 h-3.5 text-amber-500" /> Font Family
+                </label>
+                <select
+                  value={currentConf.font || 'Helvetica'}
+                  onChange={(e) => handleConfigChange(activeField, 'font', e.target.value)}
+                  className={selectStyle}
+                >
+                  {fontsList.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className={labelStyle}>
+                  <Type className="w-3.5 h-3.5 text-amber-500" /> Font Weight
+                </label>
+                <select
+                  value={currentConf.fontWeight || 'normal'}
+                  onChange={(e) => handleConfigChange(activeField, 'fontWeight', e.target.value)}
+                  className={selectStyle}
+                >
+                  <option value="normal">Normal (400)</option>
+                  <option value="semibold">SemiBold (600)</option>
+                  <option value="bold">Bold (700)</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

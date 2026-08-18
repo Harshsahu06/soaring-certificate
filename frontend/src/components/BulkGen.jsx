@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, FileSpreadsheet, Download, RefreshCw, CheckCircle2, AlertCircle, Sparkles, Layers, FileText } from 'lucide-react';
+import { Upload, FileSpreadsheet, Download, Loader2, CheckCircle2, AlertCircle, Sparkles, Layers, FileText } from 'lucide-react';
 import axios from 'axios';
 import PreviewCanvas from './PreviewCanvas';
 
@@ -158,7 +158,7 @@ export default function BulkGen({ templates, selectedTemplate, setSelectedTempla
                   >
                     {loadingParse ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin" /> Parsing Records...
+                        <Loader2 className="w-4 h-4 animate-spin" /> Parsing Records...
                       </>
                     ) : (
                       <>
@@ -228,7 +228,7 @@ export default function BulkGen({ templates, selectedTemplate, setSelectedTempla
               >
                 {loadingGen ? (
                   <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     <span>Generating {parsedRecords.length} Certificates in ZIP...</span>
                   </>
                 ) : (
@@ -255,12 +255,13 @@ export default function BulkGen({ templates, selectedTemplate, setSelectedTempla
               firstRecord || {
                 candidateName: 'Rahul Sharma',
                 rollNo: 'RPTO-2026-889',
-                groundFrom: '01 Jul 2026',
-                groundTo: '10 Jul 2026',
-                simulatorFrom: '11 Jul 2026',
-                simulatorTo: '15 Jul 2026',
+                groundFrom: '01/07/2026',
+                groundTo: '10/07/2026',
+                simulatorFrom: '11/07/2026',
+                simulatorTo: '15/07/2026',
                 certificateNo: 'CERT-RPTO-001',
                 uin: 'UIN-994820',
+                issueDate: '15/07/2026'
               }
             }
             fieldConfigs={fieldConfigs}

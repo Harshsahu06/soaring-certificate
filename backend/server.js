@@ -42,12 +42,17 @@ app.get('/api/soaring', (req, res) => {
   });
 });
 // Directories
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL;
+const UPLOADS_DIR = isVercel ? '/tmp/uploads' : path.join(__dirname, 'uploads');
 const TEMPLATES_DIR = path.join(__dirname, 'templates');
-const GENERATED_DIR = path.join(__dirname, 'generated');
+const GENERATED_DIR = isVercel ? '/tmp/generated' : path.join(__dirname, 'generated');
 
 [UPLOADS_DIR, TEMPLATES_DIR, GENERATED_DIR].forEach((dir) => {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  } catch (e) {
+    console.warn(`Could not create directory ${dir}:`, e.message);
+  }
 });
 
 // Configure Multer storage
@@ -321,7 +326,7 @@ app.post('/api/parse-excel', upload.single('excelFile'), (req, res) => {
 
     const workbook = XLSX.readFile(req.file.path);
     const sheetName = workbook.SheetNames[0];
-    const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '' });
+    const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: '', raw: false, dateNF: "dd/mm/yyyy" });
 
     fs.unlinkSync(req.file.path);
 
