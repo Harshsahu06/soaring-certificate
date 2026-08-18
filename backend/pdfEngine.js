@@ -100,6 +100,12 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
       if (fs.existsSync(path.join(fontsDir, 'Montserrat-SemiBold.ttf'))) {
         customFonts['Geometric-Sans-SemiBold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-SemiBold.ttf')));
       }
+      if (fs.existsSync(path.join(fontsDir, 'GillSansMT.ttf'))) {
+        customFonts['Gill-Sans-MT'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'GillSansMT.ttf')));
+      }
+      if (fs.existsSync(path.join(fontsDir, 'GillSansMT-Bold.ttf'))) {
+        customFonts['Gill-Sans-MT-Bold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'GillSansMT-Bold.ttf')));
+      }
     }
   } catch (err) {
     console.warn('Failed to load custom TTF fonts, falling back to standard fonts.', err);
@@ -122,6 +128,9 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
   fonts['Geometric-Sans'] = customFonts['Geometric-Sans'] || fonts['Helvetica'];
   fonts['Geometric-Sans-Bold'] = customFonts['Geometric-Sans-Bold'] || fonts['Helvetica-Bold'];
   fonts['Geometric-Sans-SemiBold'] = customFonts['Geometric-Sans-SemiBold'] || fonts['Helvetica-Bold'];
+  fonts['Gill-Sans-MT'] = customFonts['Gill-Sans-MT'] || fonts['Helvetica'];
+  fonts['Gill-Sans-MT-Bold'] = customFonts['Gill-Sans-MT-Bold'] || fonts['Helvetica-Bold'];
+  fonts['Gill-Sans-MT-SemiBold'] = fonts['Gill-Sans-MT-Bold']; // fallback for semibold
 
   // Helper to draw text for any field defined in config
   const drawFieldText = (key, textValue) => {

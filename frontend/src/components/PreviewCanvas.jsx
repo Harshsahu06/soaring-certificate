@@ -254,11 +254,13 @@ export default function PreviewCanvas({
         ? 'serif'
         : conf.font?.includes('Courier')
           ? 'monospace'
-          : conf.font?.includes('Arial')
-            ? 'Arial, sans-serif'
-            : conf.font?.includes('Geometric')
-              ? '"Montserrat", "Poppins", sans-serif'
-              : 'sans-serif',
+          : conf.font?.includes('Gill')
+            ? '"Gill Sans MT", "Gill Sans", sans-serif'
+            : conf.font?.includes('Arial')
+              ? 'Arial, sans-serif'
+              : conf.font?.includes('Geometric')
+                ? '"Montserrat", "Poppins", sans-serif'
+                : 'sans-serif',
       textAlign: conf.align || 'left',
       whiteSpace: 'nowrap',
     };
