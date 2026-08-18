@@ -42,14 +42,21 @@ async function resolveSrvUriIfNeeded(uri) {
   return uri;
 }
 
-export async function connectDB() {
-  if (!MONGODB_URI) {
-    console.log('ℹ️ Running in Local Mode: No MONGODB_URI found in .env');
-    mongoose.set('bufferCommands', false); // Disable buffering so it fails fast
-    return false;
-  }
+let connectionPromise = null;
 
-  try {
+export async function connectDB() {
+  if (mongoose.connection.readyState === 1) return true;
+
+  if (connectionPromise) return connectionPromise;
+
+  connectionPromise = (async () => {
+    if (!MONGODB_URI) {
+      console.log('ℹ️ Running in Local Mode: No MONGODB_URI found in .env');
+      mongoose.set('bufferCommands', false); // Disable buffering so it fails fast
+      return false;
+    }
+
+    try {
     // 1. Try standard connection
     const conn = await mongoose.connect(MONGODB_URI, {
       serverSelectionTimeoutMS: 4000,
@@ -86,4 +93,6 @@ export async function connectDB() {
     mongoose.set('bufferCommands', false); // Disable buffering so it fails fast
     return false;
   }
+})();
+  return connectionPromise;
 }

@@ -24,7 +24,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5000;
 
 // Enable CORS & JSON parsing
 app.use(cors());
@@ -100,8 +100,11 @@ app.get('/api/templates/file/:filename', (req, res) => {
 
 // Initialize DB and Default Template
 let isDbConnected = false;
-connectDB().then((connected) => {
-  isDbConnected = connected;
+
+// Middleware to ensure DB connection is established before serving API requests (crucial for Vercel Serverless)
+app.use('/api', async (req, res, next) => {
+  isDbConnected = await connectDB();
+  next();
 });
 // ensureDefaultTemplateExists();
 
