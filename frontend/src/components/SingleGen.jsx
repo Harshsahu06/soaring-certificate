@@ -32,13 +32,13 @@ export default function SingleGen({
       candidateName: 'Dinesh Yadav',
       courseName: 'Small Class Remote Pilot Certificate',
       duration: '5 Days',
-      issueDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      issueDate: new Date().toISOString().split('T')[0],
       certificateNo: randomNo,
       rollNo: randomRoll,
-      groundFrom: '10 Jun 2026',
-      groundTo: '12 Jun 2026',
-      simulatorFrom: '13 Jun 2026',
-      simulatorTo: '14 Jun 2026',
+      groundFrom: '2026-06-10',
+      groundTo: '2026-06-12',
+      simulatorFrom: '2026-06-13',
+      simulatorTo: '2026-06-14',
       uin: randomUin,
     });
   };
@@ -169,22 +169,20 @@ export default function SingleGen({
                   <div>
                     <label className={labelStyle}>Ground From</label>
                     <input
-                      type="text"
+                      type="date"
                       name="groundFrom"
                       value={formData.groundFrom || ''}
                       onChange={handleChange}
-                      placeholder="01/07/2026"
                       className={inputStyle}
                     />
                   </div>
                   <div>
                     <label className={labelStyle}>Ground To</label>
                     <input
-                      type="text"
+                      type="date"
                       name="groundTo"
                       value={formData.groundTo || ''}
                       onChange={handleChange}
-                      placeholder="10/07/2026"
                       className={inputStyle}
                     />
                   </div>
@@ -195,22 +193,20 @@ export default function SingleGen({
                   <div>
                     <label className={labelStyle}>Simulator From</label>
                     <input
-                      type="text"
+                      type="date"
                       name="simulatorFrom"
                       value={formData.simulatorFrom || ''}
                       onChange={handleChange}
-                      placeholder="11/07/2026"
                       className={inputStyle}
                     />
                   </div>
                   <div>
                     <label className={labelStyle}>Simulator To</label>
                     <input
-                      type="text"
+                      type="date"
                       name="simulatorTo"
                       value={formData.simulatorTo || ''}
                       onChange={handleChange}
-                      placeholder="15/07/2026"
                       className={inputStyle}
                     />
                   </div>
@@ -278,11 +274,10 @@ export default function SingleGen({
                   <div>
                     <label className={labelStyle}>Issue Date</label>
                     <input
-                      type="text"
+                      type="date"
                       name="issueDate"
                       value={formData.issueDate || ''}
                       onChange={handleChange}
-                      placeholder="12 Jul 2026"
                       className={inputStyle}
                     />
                   </div>

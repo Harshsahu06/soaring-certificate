@@ -13,8 +13,12 @@ export default function CertificateGen() {
     certificateNo: '',
     rollNo: '',
     duration: '5 Days',
-    issueDate: new Date().toLocaleDateString('en-GB'),
-    templateFileName: 'Small Certificate template.pdf'
+    issueDate: new Date().toISOString().split('T')[0],
+    templateFileName: 'Small Certificate template.pdf',
+    groundFrom: '',
+    groundTo: '',
+    simulatorFrom: '',
+    simulatorTo: ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -56,7 +60,11 @@ export default function CertificateGen() {
     setFormData(prev => ({ 
       ...prev, 
       candidateId,
-      rollNo: candidate?.rollNo || ''
+      rollNo: candidate?.rollNo || '',
+      groundFrom: candidate?.batch?.groundClassFrom || '',
+      groundTo: candidate?.batch?.groundClassTo || '',
+      simulatorFrom: candidate?.batch?.simulatorFrom || '',
+      simulatorTo: candidate?.batch?.flyingClassTo || ''
     }));
   };
 
@@ -168,7 +176,7 @@ export default function CertificateGen() {
 
             <div>
               <label className="block text-sm font-medium mb-2 dark:text-slate-300">Issue Date</label>
-              <input required type="text" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+              <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
                 value={formData.issueDate} onChange={e => setFormData({ ...formData, issueDate: e.target.value })} />
             </div>
 
@@ -176,6 +184,30 @@ export default function CertificateGen() {
               <label className="block text-sm font-medium mb-2 dark:text-slate-300">Duration</label>
               <input required type="text" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                 value={formData.duration} onChange={e => setFormData({ ...formData, duration: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Ground From</label>
+              <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
+                value={formData.groundFrom} onChange={e => setFormData({ ...formData, groundFrom: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Ground To</label>
+              <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
+                value={formData.groundTo} onChange={e => setFormData({ ...formData, groundTo: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Simulator From</label>
+              <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
+                value={formData.simulatorFrom} onChange={e => setFormData({ ...formData, simulatorFrom: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Simulator To</label>
+              <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
+                value={formData.simulatorTo} onChange={e => setFormData({ ...formData, simulatorTo: e.target.value })} />
             </div>
 
           </div>
