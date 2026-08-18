@@ -73,8 +73,8 @@ export default function TemplateMapper({
   const handleNudge = (dx, dy) => {
     const current = fieldConfigs?.[activeField] || { x: 400, y: 300 };
     handleFieldChange(activeField, {
-      x: Math.max(0, Math.round((current.x || 0) + dx)),
-      y: Math.max(0, Math.round((current.y || 0) + dy)),
+      x: Math.max(0, Math.round(((current.x || 0) + dx) * 100) / 100),
+      y: Math.max(0, Math.round(((current.y || 0) + dy) * 100) / 100),
     });
   };
 
@@ -445,7 +445,7 @@ export default function TemplateMapper({
                 <Settings className="w-4 h-4" /> {fieldLabels[activeField]}
               </span>
               <span className={`text-xs font-mono px-2 py-0.5 rounded border ${isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-white text-slate-700 border-slate-300'}`}>
-                X: {Math.round(currentConf.x)} | Y: {Math.round(currentConf.y)} | Size: {currentConf.fontSize}pt
+                X: {Number(currentConf.x || 0).toFixed(2)} | Y: {Number(currentConf.y || 0).toFixed(2)} | Size: {currentConf.fontSize}pt
               </span>
             </div>
 
@@ -465,33 +465,33 @@ export default function TemplateMapper({
 
             {/* Fine Nudge Arrow Pad */}
             <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <span className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Fine Nudge (1pt Precision)</span>
+              <span className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Fine Nudge (0.25pt Precision)</span>
               <div className="flex items-center gap-1.5">
                 <button
-                  onClick={() => handleNudge(-1, 0)}
+                  onClick={() => handleNudge(-0.25, 0)}
                   className={`p-2 rounded-lg text-xs transition-all font-bold ${isDark ? 'bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200' : 'bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 border border-slate-300'}`}
-                  title="Move Left 1pt"
+                  title="Move Left 0.25pt"
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleNudge(1, 0)}
+                  onClick={() => handleNudge(0.25, 0)}
                   className={`p-2 rounded-lg text-xs transition-all font-bold ${isDark ? 'bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200' : 'bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 border border-slate-300'}`}
-                  title="Move Right 1pt"
+                  title="Move Right 0.25pt"
                 >
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleNudge(0, 1)}
+                  onClick={() => handleNudge(0, 0.25)}
                   className={`p-2 rounded-lg text-xs transition-all font-bold ${isDark ? 'bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200' : 'bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 border border-slate-300'}`}
-                  title="Move Up 1pt"
+                  title="Move Up 0.25pt"
                 >
                   <ArrowUp className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleNudge(0, -1)}
+                  onClick={() => handleNudge(0, -0.25)}
                   className={`p-2 rounded-lg text-xs transition-all font-bold ${isDark ? 'bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200' : 'bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 border border-slate-300'}`}
-                  title="Move Down 1pt"
+                  title="Move Down 0.25pt"
                 >
                   <ArrowDown className="w-4 h-4" />
                 </button>
@@ -502,13 +502,13 @@ export default function TemplateMapper({
             <div>
               <div className={`flex justify-between text-xs mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 <span>X Position (Horizontal)</span>
-                <span className="font-mono text-amber-600 dark:text-amber-300 font-bold">{Math.round(currentConf.x)} pt</span>
+                <span className="font-mono text-amber-600 dark:text-amber-300 font-bold">{Number(currentConf.x || 0).toFixed(2)} pt</span>
               </div>
               <input
                 type="range"
                 min="0"
                 max="842"
-                step="1"
+                step="0.25"
                 value={currentConf.x || 400}
                 onChange={(e) => handleConfigChange(activeField, 'x', parseFloat(e.target.value))}
                 className="w-full accent-amber-500 cursor-pointer"
@@ -519,13 +519,13 @@ export default function TemplateMapper({
             <div>
               <div className={`flex justify-between text-xs mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 <span>Y Position (Vertical baseline from bottom)</span>
-                <span className="font-mono text-amber-600 dark:text-amber-300 font-bold">{Math.round(currentConf.y)} pt</span>
+                <span className="font-mono text-amber-600 dark:text-amber-300 font-bold">{Number(currentConf.y || 0).toFixed(2)} pt</span>
               </div>
               <input
                 type="range"
                 min="0"
                 max="595"
-                step="1"
+                step="0.25"
                 value={currentConf.y || 300}
                 onChange={(e) => handleConfigChange(activeField, 'y', parseFloat(e.target.value))}
                 className="w-full accent-amber-500 cursor-pointer"
