@@ -65,14 +65,41 @@ export default function Candidates() {
     fetchData();
   }, []);
 
+  const saveDraft = async () => {
+    try {
+      const dataToSave = { ...formData, status: 'Draft' };
+      if (!dataToSave.batch) {
+        delete dataToSave.batch;
+      }
+      if (editingId) {
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${editingId}`, dataToSave);
+      } else {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/candidates`, dataToSave);
+      }
+      setShowModal(false);
+      setEditingId(null);
+      fetchData();
+      // Reset form
+      setFormData({
+        rollNo: '', fullName: '', permanentAddress: '', phoneNumber: '', emailAddress: '',
+        maximumQualification: '', dateOfBirth: '', aadharNumber: '', secondaryIdNumber: '',
+        organizationOrIndividual: 'INDIVIDUAL', check4Photographs: false, check10thCertificate: false,
+        checkAadhar: false, checkSecondaryIdType: '', checkSelfAttested: false, checkMedicalFitness: false, batch: ''
+      });
+    } catch (error) {
+      console.error('Error saving draft:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.batch) return alert("Please select a batch");
     try {
+      const dataToSave = { ...formData, status: 'Completed' };
       if (editingId) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${editingId}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/admin/candidates/${editingId}`, dataToSave);
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/candidates`, formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/candidates`, dataToSave);
       }
       setShowModal(false);
       setEditingId(null);
@@ -193,7 +220,12 @@ export default function Candidates() {
               ) : (
                 filteredCandidates.map(candidate => (
                   <tr key={candidate._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="p-4 font-medium text-slate-900 dark:text-white">{candidate.fullName}</td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">
+                      {candidate.fullName}
+                      {candidate.status === 'Draft' && (
+                        <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full dark:bg-gray-700 dark:text-gray-300">Draft</span>
+                      )}
+                    </td>
                     <td className="p-4 text-sm font-mono text-slate-500">{candidate.rollNo || 'N/A'}</td>
                     <td className="p-4 text-sm text-slate-600 dark:text-slate-300">
                       {candidate.batch ? candidate.batch.batchName : 'No Batch'}
@@ -263,7 +295,7 @@ export default function Candidates() {
                     value={formData.maximumQualification} onChange={e => setFormData({...formData, maximumQualification: e.target.value})} /></div>
                 
                 <div><label className="block text-sm font-medium mb-1 dark:text-slate-300">Date of Birth</label>
-                  <input required type="text" placeholder="DD MMM YYYY" className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  <input required type="date" className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     value={formData.dateOfBirth} onChange={e => setFormData({...formData, dateOfBirth: e.target.value})} /></div>
                 
                 <div><label className="block text-sm font-medium mb-1 dark:text-slate-300">Aadhar Number</label>
@@ -309,6 +341,9 @@ export default function Candidates() {
               <div className="flex justify-end gap-3 pt-4 border-t dark:border-slate-700">
                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
                   Cancel
+                </button>
+                <button type="button" onClick={saveDraft} className="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600">
+                  Save as Draft
                 </button>
                 <button type="submit" className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600">
                   {editingId ? 'Update Candidate' : 'Save Candidate'}

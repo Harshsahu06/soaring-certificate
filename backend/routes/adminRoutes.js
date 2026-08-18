@@ -259,18 +259,28 @@ router.post('/generate-certificate', async (req, res) => {
       return res.status(404).json({ message: 'Candidate or UIN not found' });
     }
 
+    const formatDate = (dateStr) => {
+      if (!dateStr) return '';
+      // Assuming dateStr is YYYY-MM-DD
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dateStr;
+    };
+
     // Generate PDF
     const certData = {
       candidateName: candidate.fullName,
       courseName,
       duration,
-      issueDate,
+      issueDate: formatDate(issueDate),
       certificateNo,
       rollNo: rollNo || candidate.rollNo || `R-${candidate.aadharNumber.slice(-4)}`,
-      groundFrom: candidate.batch.groundClassFrom,
-      groundTo: candidate.batch.groundClassTo,
-      simulatorFrom: candidate.batch.simulatorFrom,
-      simulatorTo: candidate.batch.simulatorTo,
+      groundFrom: formatDate(candidate.batch.groundClassFrom),
+      groundTo: formatDate(candidate.batch.groundClassTo),
+      simulatorFrom: formatDate(candidate.batch.simulatorFrom),
+      simulatorTo: formatDate(candidate.batch.simulatorTo),
       uin: uin.uinNumber
     };
 

@@ -2,15 +2,17 @@ import mongoose from 'mongoose';
 
 const CandidateSchema = new mongoose.Schema({
   // Candidate Information
-  fullName: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
-  phoneNumber: { type: String, required: true },
-  emailAddress: { type: String, required: true },
-  maximumQualification: { type: String, required: true },
-  dateOfBirth: { type: String, required: true },
-  aadharNumber: { type: String, required: true },
-  secondaryIdNumber: { type: String, required: true },
-  organizationOrIndividual: { type: String, required: true },
+  fullName: { type: String },
+  permanentAddress: { type: String },
+  phoneNumber: { type: String },
+  emailAddress: { type: String },
+  maximumQualification: { type: String },
+  dateOfBirth: { type: String },
+  aadharNumber: { type: String },
+  secondaryIdNumber: { type: String },
+  organizationOrIndividual: { type: String },
+
+  status: { type: String, enum: ['Draft', 'Completed'], default: 'Completed' },
 
   // Checklist (For Official Use Only - Do Not Fill)
   check4Photographs: { type: Boolean, default: false },
@@ -25,7 +27,7 @@ const CandidateSchema = new mongoose.Schema({
   checkMedicalFitness: { type: Boolean, default: false },
   
   // References
-  batch: { type: mongoose.Schema.Types.ObjectId, ref: 'Batch', required: true },
+  batch: { type: mongoose.Schema.Types.ObjectId, ref: 'Batch' },
   uin: { type: String, default: null }, // Assigned later during cert gen
   rollNo: { type: String, default: null, unique: true, sparse: true }, // Roll no for the batch
 

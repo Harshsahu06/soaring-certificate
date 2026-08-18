@@ -24,7 +24,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 6000;
 
 // Enable CORS & JSON parsing
 app.use(cors());
@@ -38,7 +38,7 @@ app.get('/api/soaring', (req, res) => {
   res.json({
     status: 'ok',
     message: 'Certificate Generator Backend API is running',
-   
+
   });
 });
 // Directories
@@ -371,6 +371,16 @@ app.post('/api/generate-bulk', async (req, res) => {
     const zip = new JSZip();
     const dbDocs = [];
 
+    const formatDate = (dateStr) => {
+      if (!dateStr) return '';
+      // Assuming dateStr is YYYY-MM-DD
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dateStr;
+    };
+
     for (let i = 0; i < records.length; i++) {
       const rec = records[i];
       const candidateName = rec.candidateName || rec.Name || `Candidate_${i + 1}`;
@@ -384,13 +394,13 @@ app.post('/api/generate-bulk', async (req, res) => {
           candidateName,
           courseName,
           duration,
-          issueDate,
+          issueDate: formatDate(issueDate),
           certificateNo,
           rollNo: rec.rollNo || '',
-          groundFrom: rec.groundFrom || '',
-          groundTo: rec.groundTo || '',
-          simulatorFrom: rec.simulatorFrom || '',
-          simulatorTo: rec.simulatorTo || '',
+          groundFrom: formatDate(rec.groundFrom || ''),
+          groundTo: formatDate(rec.groundTo || ''),
+          simulatorFrom: formatDate(rec.simulatorFrom || ''),
+          simulatorTo: formatDate(rec.simulatorTo || ''),
           uin: rec.uin || '',
         },
         templatePath,
