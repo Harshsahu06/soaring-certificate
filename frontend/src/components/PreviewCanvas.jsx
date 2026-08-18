@@ -254,8 +254,10 @@ export default function PreviewCanvas({
         ? 'serif'
         : conf.font?.includes('Courier')
           ? 'monospace'
-          : conf.font?.includes('Gill')
-            ? '"Gill Sans MT", "Gill Sans", sans-serif'
+          : conf.font?.includes('Futura')
+            ? '"Futura Md BT", "Futura", sans-serif'
+            : conf.font?.includes('Gill')
+              ? '"Gill Sans MT", "Gill Sans", sans-serif'
             : conf.font?.includes('Arial')
               ? 'Arial, sans-serif'
               : conf.font?.includes('Geometric')

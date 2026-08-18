@@ -47,7 +47,9 @@ export default function TemplateMapper({
     'Geometric-Sans-Bold',
     'Geometric-Sans-SemiBold',
     'Gill-Sans-MT',
-    'Gill-Sans-MT-Bold'
+    'Gill-Sans-MT-Bold',
+    'Futura-Md-BT',
+    'Futura-Md-BT-Bold'
   ];
 
   const handleConfigChange = (field, key, value) => {

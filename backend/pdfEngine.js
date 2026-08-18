@@ -112,6 +112,12 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
       if (fs.existsSync(path.join(fontsDir, 'GillSansMT-Bold.ttf'))) {
         customFonts['Gill-Sans-MT-Bold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'GillSansMT-Bold.ttf')));
       }
+      if (fs.existsSync(path.join(fontsDir, 'FuturaMdBT.ttf'))) {
+        customFonts['Futura-Md-BT'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'FuturaMdBT.ttf')));
+      }
+      if (fs.existsSync(path.join(fontsDir, 'FuturaMdBT-Bold.ttf'))) {
+        customFonts['Futura-Md-BT-Bold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'FuturaMdBT-Bold.ttf')));
+      }
     }
   } catch (err) {
     console.warn('Failed to load custom TTF fonts, falling back to standard fonts.', err);
@@ -139,6 +145,8 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
   fonts['Gill-Sans-MT'] = customFonts['Gill-Sans-MT'] || fonts['Helvetica'];
   fonts['Gill-Sans-MT-Bold'] = customFonts['Gill-Sans-MT-Bold'] || fonts['Helvetica-Bold'];
   fonts['Gill-Sans-MT-SemiBold'] = fonts['Gill-Sans-MT-Bold']; // fallback for semibold
+  fonts['Futura-Md-BT'] = customFonts['Futura-Md-BT'] || fonts['Helvetica'];
+  fonts['Futura-Md-BT-Bold'] = customFonts['Futura-Md-BT-Bold'] || fonts['Helvetica-Bold'];
 
   // Helper to draw text for any field defined in config
   const drawFieldText = (key, textValue) => {
