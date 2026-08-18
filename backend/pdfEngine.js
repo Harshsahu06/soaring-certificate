@@ -139,9 +139,10 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
     if (!fieldConf) return;
 
     let fontKey = fieldConf.font || 'Helvetica';
-    if (fieldConf.fontWeight === 'bold' && !fontKey.includes('Bold')) {
+    const wt = String(fieldConf.fontWeight);
+    if ((wt === 'bold' || wt === '700' || wt === '800' || wt === '900') && !fontKey.includes('Bold')) {
       if (fonts[`${fontKey}-Bold`]) fontKey = `${fontKey}-Bold`;
-    } else if (fieldConf.fontWeight === 'semibold' && !fontKey.includes('SemiBold')) {
+    } else if ((wt === 'semibold' || wt === '600') && !fontKey.includes('SemiBold')) {
       if (fonts[`${fontKey}-SemiBold`]) fontKey = `${fontKey}-SemiBold`;
     }
 

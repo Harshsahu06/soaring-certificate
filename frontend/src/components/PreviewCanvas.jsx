@@ -248,7 +248,7 @@ export default function PreviewCanvas({
       color: conf.color || '#000000',
       fontSize: `${scaledFontSize}px`,
       lineHeight: '1',
-      fontWeight: conf.fontWeight === 'bold' ? '700' : conf.fontWeight === 'semibold' ? '600' : conf.font?.includes('SemiBold') ? '600' : conf.font?.includes('Bold') ? '700' : '400',
+      fontWeight: ['100','200','300','400','500','600','700','800','900'].includes(String(conf.fontWeight)) ? String(conf.fontWeight) : (conf.fontWeight === 'bold' ? '700' : conf.fontWeight === 'semibold' ? '600' : conf.font?.includes('SemiBold') ? '600' : conf.font?.includes('Bold') ? '700' : '400'),
       fontStyle: conf.font?.includes('Oblique') ? 'italic' : 'normal',
       fontFamily: conf.font?.includes('Times')
         ? 'serif'

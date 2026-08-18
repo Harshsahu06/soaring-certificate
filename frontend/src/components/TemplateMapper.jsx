@@ -631,9 +631,15 @@ export default function TemplateMapper({
                   onChange={(e) => handleConfigChange(activeField, 'fontWeight', e.target.value)}
                   className={selectStyle}
                 >
-                  <option value="normal">Normal (400)</option>
-                  <option value="semibold">SemiBold (600)</option>
-                  <option value="bold">Bold (700)</option>
+                  <option value="100">Thin (100)</option>
+                  <option value="200">Extra Light (200)</option>
+                  <option value="300">Light (300)</option>
+                  <option value="400">Normal (400)</option>
+                  <option value="500">Medium (500)</option>
+                  <option value="600">SemiBold (600)</option>
+                  <option value="700">Bold (700)</option>
+                  <option value="800">Extra Bold (800)</option>
+                  <option value="900">Black (900)</option>
                 </select>
               </div>
             </div>
