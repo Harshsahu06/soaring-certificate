@@ -45,7 +45,9 @@ export default function TemplateMapper({
     'Arial-Bold',
     'Geometric-Sans',
     'Geometric-Sans-Bold',
-    'Geometric-Sans-SemiBold'
+    'Geometric-Sans-SemiBold',
+    'Gill-Sans-MT',
+    'Gill-Sans-MT-Bold'
   ];
 
   const handleConfigChange = (field, key, value) => {
