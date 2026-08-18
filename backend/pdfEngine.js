@@ -100,6 +100,12 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
       if (fs.existsSync(path.join(fontsDir, 'Montserrat-SemiBold.ttf'))) {
         customFonts['Geometric-Sans-SemiBold'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-SemiBold.ttf')));
       }
+      if (fs.existsSync(path.join(fontsDir, 'Montserrat-Light.ttf'))) {
+        customFonts['Geometric-Sans-Light'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-Light.ttf')));
+      }
+      if (fs.existsSync(path.join(fontsDir, 'Montserrat-Medium.ttf'))) {
+        customFonts['Geometric-Sans-Medium'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'Montserrat-Medium.ttf')));
+      }
       if (fs.existsSync(path.join(fontsDir, 'GillSansMT.ttf'))) {
         customFonts['Gill-Sans-MT'] = await pdfDoc.embedFont(fs.readFileSync(path.join(fontsDir, 'GillSansMT.ttf')));
       }
@@ -128,6 +134,8 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
   fonts['Geometric-Sans'] = customFonts['Geometric-Sans'] || fonts['Helvetica'];
   fonts['Geometric-Sans-Bold'] = customFonts['Geometric-Sans-Bold'] || fonts['Helvetica-Bold'];
   fonts['Geometric-Sans-SemiBold'] = customFonts['Geometric-Sans-SemiBold'] || fonts['Helvetica-Bold'];
+  fonts['Geometric-Sans-Light'] = customFonts['Geometric-Sans-Light'] || fonts['Geometric-Sans'] || fonts['Helvetica'];
+  fonts['Geometric-Sans-Medium'] = customFonts['Geometric-Sans-Medium'] || fonts['Geometric-Sans-SemiBold'] || fonts['Geometric-Sans'] || fonts['Helvetica'];
   fonts['Gill-Sans-MT'] = customFonts['Gill-Sans-MT'] || fonts['Helvetica'];
   fonts['Gill-Sans-MT-Bold'] = customFonts['Gill-Sans-MT-Bold'] || fonts['Helvetica-Bold'];
   fonts['Gill-Sans-MT-SemiBold'] = fonts['Gill-Sans-MT-Bold']; // fallback for semibold
@@ -144,6 +152,10 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
       if (fonts[`${fontKey}-Bold`]) fontKey = `${fontKey}-Bold`;
     } else if ((wt === 'semibold' || wt === '600') && !fontKey.includes('SemiBold')) {
       if (fonts[`${fontKey}-SemiBold`]) fontKey = `${fontKey}-SemiBold`;
+    } else if ((wt === 'medium' || wt === '500') && !fontKey.includes('Medium')) {
+      if (fonts[`${fontKey}-Medium`]) fontKey = `${fontKey}-Medium`;
+    } else if ((wt === 'light' || wt === '300' || wt === '200' || wt === '100') && !fontKey.includes('Light')) {
+      if (fonts[`${fontKey}-Light`]) fontKey = `${fontKey}-Light`;
     }
 
     const fontObj = fonts[fontKey] || fonts[fieldConf.font] || fonts['Helvetica'];
