@@ -9,7 +9,7 @@ const RegistrationFormPDF = React.forwardRef(({ candidate }, ref) => {
         fontFamily: 'Arial, sans-serif',
         color: '#000',
         margin: '0',
-        padding: '0',
+        padding: '40px',
         fontSize: '12px',
         lineHeight: '1.3',
         width: '100%',
