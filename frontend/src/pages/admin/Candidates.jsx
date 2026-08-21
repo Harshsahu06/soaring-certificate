@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Plus, Trash2, Printer, Loader2 } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import RegistrationFormPDF from '../../components/RegistrationFormPDF';
+import SkillTestReportPDF from '../../components/SkillTestReportPDF';
+import ProgressTestReportPDF from '../../components/ProgressTestReportPDF';
 
 export default function Candidates() {
   const [candidates, setCandidates] = useState([]);
@@ -17,12 +19,43 @@ export default function Candidates() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
+  // Print States
   const printRef = useRef();
+  const skillPrintRef = useRef();
+  const progressPrintRef = useRef();
 
   const handlePrint = useReactToPrint({
     contentRef: printRef,
     documentTitle: '',
     onAfterPrint: () => setSelectedCandidateToPrint(null)
+  });
+
+  const handleSkillPrint = useReactToPrint({
+    contentRef: skillPrintRef,
+    documentTitle: 'Skill_Test_Report',
+    onAfterPrint: () => setReportModalConfig(null)
+  });
+
+  const handleProgressPrint = useReactToPrint({
+    contentRef: progressPrintRef,
+    documentTitle: 'Progress_Test_Report',
+    onAfterPrint: () => setReportModalConfig(null)
+  });
+
+  const [reportModalConfig, setReportModalConfig] = useState(null);
+  const [testDetails, setTestDetails] = useState({
+    instructor: 'Aditya Agrawal',
+    date: new Date().toLocaleDateString('en-GB'),
+    duration: '00:30',
+    type: 'Fixed Wing',
+    dayNight: 'Day',
+    comments: 'NIL',
+    // Defaults for all SAT/UNSAT rows
+    item1: 'Sat', item2: 'Sat', item3: 'Sat', item4: 'Sat', item5: 'Sat',
+    item6: 'Sat', item7: 'Sat', item8: 'Sat', item9: 'Sat', item10: 'Sat',
+    item1_1: 'Sat', item1_2: 'Sat', item1_3: 'Sat', item1_4: 'Sat',
+    item2_1: 'Sat', item2_2: 'Sat', item2_3: 'Sat', item2_4: 'Sat', item2_5: 'Sat',
+    item3_1: 'Sat', item4_1: 'Sat', overall: 'Sat'
   });
 
   const triggerPrint = (candidate) => {
@@ -252,6 +285,18 @@ export default function Candidates() {
                       <button onClick={() => handleEdit(candidate)} className="text-blue-500 hover:text-blue-700 p-2" title="Edit Candidate">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                       </button>
+                      <button onClick={() => {
+                        setReportModalConfig({ candidate, type: 'skill' });
+                        setTestDetails(prev => ({ ...prev, type: 'Fixed Wing' })); // reset type default
+                      }} className="text-emerald-500 hover:text-emerald-700 p-2" title="Print Skill Test Report">
+                        <span className="text-xs font-bold border border-emerald-500 rounded px-1">ST</span>
+                      </button>
+                      <button onClick={() => {
+                        setReportModalConfig({ candidate, type: 'progress' });
+                        setTestDetails(prev => ({ ...prev, type: 'Theory' })); // reset type default
+                      }} className="text-indigo-500 hover:text-indigo-700 p-2" title="Print Progress Test Report">
+                        <span className="text-xs font-bold border border-indigo-500 rounded px-1">PT</span>
+                      </button>
                       <button onClick={() => triggerPrint(candidate)} className="text-amber-500 hover:text-amber-700 p-2" title="Print Registration Form">
                         <Printer className="w-5 h-5" />
                       </button>
@@ -369,6 +414,165 @@ export default function Candidates() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Hidden Print Components */}
+      {reportModalConfig?.type === 'skill' && (
+        <SkillTestReportPDF ref={skillPrintRef} candidate={reportModalConfig.candidate} testDetails={testDetails} />
+      )}
+      {reportModalConfig?.type === 'progress' && (
+        <ProgressTestReportPDF ref={progressPrintRef} candidate={reportModalConfig.candidate} testDetails={testDetails} />
+      )}
+
+      {/* Modal for Filling Test Reports */}
+      {reportModalConfig && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold mb-4 dark:text-white">
+              {reportModalConfig.type === 'skill' ? 'Fill Skill Test Details' : 'Fill Progress Test Details'}
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium mb-1 dark:text-slate-300">Instructor Name</label>
+                <select 
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  value={testDetails.instructor}
+                  onChange={e => setTestDetails({...testDetails, instructor: e.target.value})}
+                >
+                  <option value="Aditya Agrawal">Aditya Agrawal</option>
+                  <option value="Lalit Nagapurkar">Lalit Nagapurkar</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1 dark:text-slate-300">Date of Test</label>
+                <input 
+                  type="text" 
+                  placeholder="DD/MM/YYYY"
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  value={testDetails.date}
+                  onChange={e => setTestDetails({...testDetails, date: e.target.value})}
+                />
+              </div>
+
+              {reportModalConfig.type === 'skill' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 dark:text-slate-300">Test Time (Day/Night)</label>
+                    <select 
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                      value={testDetails.dayNight}
+                      onChange={e => setTestDetails({...testDetails, dayNight: e.target.value})}
+                    >
+                      <option value="Day">Day</option>
+                      <option value="Night">Night</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 dark:text-slate-300">Duration (Hrs)</label>
+                    <input 
+                      type="text" 
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                      value={testDetails.duration}
+                      onChange={e => setTestDetails({...testDetails, duration: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 dark:text-slate-300">Type of Test</label>
+                    <select 
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                      value={testDetails.type}
+                      onChange={e => setTestDetails({...testDetails, type: e.target.value})}
+                    >
+                      <option value="Fixed Wing">Fixed Wing</option>
+                      <option value="RotaryWing">RotaryWing</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {reportModalConfig.type === 'progress' && (
+                <div>
+                  <label className="block text-sm font-medium mb-1 dark:text-slate-300">Type of Test</label>
+                  <select 
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    value={testDetails.type}
+                    onChange={e => setTestDetails({...testDetails, type: e.target.value})}
+                  >
+                    <option value="Theory">Theory</option>
+                    <option value="Simulator">Simulator</option>
+                    <option value="RPA">RPA</option>
+                  </select>
+                </div>
+              )}
+              
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-1 dark:text-slate-300">Comments</label>
+                <input 
+                  type="text" 
+                  className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  value={testDetails.comments}
+                  onChange={e => setTestDetails({...testDetails, comments: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <h4 className="font-semibold mb-2 dark:text-white">Assessments (Mark UNSAT if applicable, defaults to SAT)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                {reportModalConfig.type === 'skill' ? (
+                  ['Flight Planning', 'Precautions before flight', 'Pre-flight Checks', 'Take off', 'General handling', 'Emergency handling', 'Landing', 'Airmanship', 'Situational awareness', 'Documentation'].map((label, idx) => {
+                    const key = `item${idx + 1}`;
+                    return (
+                      <div key={key} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-2 rounded">
+                        <span className="dark:text-slate-300">{label}</span>
+                        <div className="flex gap-2">
+                          <label className="flex items-center gap-1 dark:text-white cursor-pointer"><input type="radio" name={key} checked={testDetails[key] === 'Sat'} onChange={() => setTestDetails({...testDetails, [key]: 'Sat'})} /> Sat</label>
+                          <label className="flex items-center gap-1 dark:text-white cursor-pointer"><input type="radio" name={key} checked={testDetails[key] === 'Unsat'} onChange={() => setTestDetails({...testDetails, [key]: 'Unsat'})} /> Unsat</label>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  [
+                    {k: 'item1_1', l: 'Knowledge of control'}, {k: 'item1_2', l: 'Pre-Flight Checklist'}, {k: 'item1_3', l: 'Pre-Flight Inspection'}, {k: 'item1_4', l: 'Flight Planning'},
+                    {k: 'item2_1', l: 'Takeoff and Landing'}, {k: 'item2_2', l: 'Basic Control'}, {k: 'item2_3', l: 'Climb and Descent'}, {k: 'item2_4', l: 'Pitch, Roll and Yaw'}, {k: 'item2_5', l: 'Flying in Disorientation'},
+                    {k: 'item3_1', l: 'Situational Awareness'}, {k: 'item4_1', l: 'Airmanship'}, {k: 'overall', l: 'OVERALL PROGRESS'}
+                  ].map(({k, l}) => (
+                    <div key={k} className="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-2 rounded">
+                      <span className="dark:text-slate-300 font-medium">{l}</span>
+                      <div className="flex gap-2">
+                        <label className="flex items-center gap-1 dark:text-white cursor-pointer"><input type="radio" name={k} checked={testDetails[k] === 'Sat'} onChange={() => setTestDetails({...testDetails, [k]: 'Sat'})} /> Sat</label>
+                        <label className="flex items-center gap-1 dark:text-white cursor-pointer"><input type="radio" name={k} checked={testDetails[k] === 'Unsat'} onChange={() => setTestDetails({...testDetails, [k]: 'Unsat'})} /> Unsat</label>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t dark:border-slate-700">
+              <button type="button" onClick={() => setReportModalConfig(null)} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+                Cancel
+              </button>
+              <button 
+                type="button" 
+                onClick={() => {
+                  if (reportModalConfig.type === 'skill') {
+                    setTimeout(() => handleSkillPrint(), 100);
+                  } else {
+                    setTimeout(() => handleProgressPrint(), 100);
+                  }
+                }} 
+                className="px-4 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4" /> Print Report
+              </button>
+            </div>
           </div>
         </div>
       )}
