@@ -4,19 +4,6 @@ import logo from "../assets/soaring-logo.png";
 const ProgressTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref) => {
   if (!candidate || !testDetails) return null;
 
-  const renderItem = (label, id, index) => {
-    const isSat = testDetails[id] !== 'Unsat';
-    return (
-      <tr key={id}>
-        <td style={{ textAlign: 'center', width: '8%' }}>{index + 1}</td>
-        <td style={{ width: '50%' }}>{label}</td>
-        <td style={{ textAlign: 'center', width: '21%', fontWeight: 'bold' }}>
-          {isSat ? 'Sat' : 'Unsat'}
-        </td>
-        <td style={{ width: '21%' }}></td>
-      </tr>
-    );
-  };
 
   return (
     <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
@@ -98,75 +85,104 @@ const ProgressTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref)
         <table className="table-bordered" style={{ marginBottom: '25px' }}>
           <thead>
             <tr>
-              <th colSpan="2" style={{ textAlign: 'center', width: '58%' }}>Aspect of knowledge / skill / attitude</th>
+              <th colSpan="3" style={{ textAlign: 'center', width: '58%' }}>Aspect of knowledge / skill / attitude</th>
               <th style={{ textAlign: 'center', width: '21%' }}>Assessment</th>
               <th style={{ textAlign: 'center', width: '21%' }}>Remarks</th>
             </tr>
           </thead>
           <tbody>
-            {/* Group 1 */}
             <tr>
               <td rowSpan="4" style={{ width: '15%', verticalAlign: 'top' }}>Prerequisite<br/>knowledge<br/>before<br/>Progress Test</td>
-              <td style={{ padding: 0, border: 0 }} colSpan="3">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <tbody>
-                    {renderItem('Knowledge of control', 'item1_1', 0)}
-                    {renderItem('Pre-Flight Checklist', 'item1_2', 1)}
-                    {renderItem('Pre-Flight Inspection', 'item1_3', 2)}
-                    {renderItem('Flight Planning', 'item1_4', 3)}
-                  </tbody>
-                </table>
-              </td>
+              <td style={{ textAlign: 'center', width: '5%' }}>1</td>
+              <td style={{ width: '38%' }}>Knowledge of control</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item1_1'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td style={{ textAlign: 'center' }}>2</td>
+              <td>Pre-Flight Checklist</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item1_2'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td style={{ textAlign: 'center' }}>3</td>
+              <td>Pre-Flight Inspection</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item1_3'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td style={{ textAlign: 'center' }}>4</td>
+              <td>Flight Planning</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item1_4'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
             </tr>
             
-            {/* Empty separator row */}
             <tr>
-              <td colSpan="4" style={{ height: '20px', backgroundColor: '#f9f9f9' }}></td>
+              <td colSpan="5" style={{ height: '20px', backgroundColor: '#f9f9f9' }}></td>
             </tr>
 
-            {/* Group 2 */}
             <tr>
-              <td rowSpan="5" style={{ width: '15%', verticalAlign: 'top' }}>Performance<br/>during the<br/>test</td>
-              <td style={{ padding: 0, border: 0 }} colSpan="3">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <tbody>
-                    {renderItem('Takeoff and Landing', 'item2_1', 0)}
-                    {renderItem('Basic Control', 'item2_2', 1)}
-                    {renderItem('Climb and Descent', 'item2_3', 2)}
-                    {renderItem('Pitch, Roll and Yaw', 'item2_4', 3)}
-                    {renderItem('Flying in Disorientation & Recovery', 'item2_5', 4)}
-                  </tbody>
-                </table>
-              </td>
+              <td rowSpan="5" style={{ verticalAlign: 'top' }}>Performance<br/>during the<br/>test</td>
+              <td style={{ textAlign: 'center' }}>1</td>
+              <td>Takeoff and Landing</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item2_1'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td style={{ textAlign: 'center' }}>2</td>
+              <td>Basic Control</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item2_2'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td style={{ textAlign: 'center' }}>3</td>
+              <td>Climb and Descent</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item2_3'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td style={{ textAlign: 'center' }}>4</td>
+              <td>Pitch, Roll and Yaw</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item2_4'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td style={{ textAlign: 'center' }}>5</td>
+              <td>Flying in Disorientation & Recovery</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item2_5'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
             </tr>
 
-            {/* Group 3 */}
             <tr>
-              <td style={{ width: '15%' }}>Technique</td>
-              <td style={{ padding: 0, border: 0 }} colSpan="3">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <tbody>
-                    {renderItem('Situational Awareness', 'item3_1', 0)}
-                  </tbody>
-                </table>
-              </td>
+              <td colSpan="5" style={{ height: '20px', backgroundColor: '#f9f9f9' }}></td>
             </tr>
 
-            {/* Group 4 */}
             <tr>
-              <td style={{ width: '15%' }}>Attitude</td>
-              <td style={{ padding: 0, border: 0 }} colSpan="3">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <tbody>
-                    {renderItem('Airmanship', 'item4_1', 0)}
-                  </tbody>
-                </table>
-              </td>
+              <td rowSpan="1">Technique</td>
+              <td style={{ textAlign: 'center' }}>1</td>
+              <td>Situational Awareness</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item3_1'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
             </tr>
 
-            {/* Overall Progress */}
             <tr>
-              <td colSpan="2" style={{ fontWeight: 'bold' }}>Overall Progress</td>
+              <td colSpan="5" style={{ height: '20px', backgroundColor: '#f9f9f9' }}></td>
+            </tr>
+
+            <tr>
+              <td rowSpan="1">Attitude</td>
+              <td style={{ textAlign: 'center' }}>1</td>
+              <td>Airmanship</td>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{testDetails['item4_1'] !== 'Unsat' ? 'Sat' : 'Unsat'}</td>
+              <td></td>
+            </tr>
+
+            <tr>
+              <td colSpan="5" style={{ height: '20px', backgroundColor: '#f9f9f9' }}></td>
+            </tr>
+
+            <tr>
+              <td colSpan="3" style={{ fontWeight: 'bold', textAlign: 'right', paddingRight: '20px' }}>Overall Progress</td>
               <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
                 {testDetails['overall'] !== 'Unsat' ? 'Sat' : 'Unsat'}
               </td>
