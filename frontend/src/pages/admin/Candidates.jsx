@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Plus, Trash2, Printer, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Printer, Loader2, ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
 import { useReactToPrint } from 'react-to-print';
 import RegistrationFormPDF from '../../components/RegistrationFormPDF';
 import SkillTestReportPDF from '../../components/SkillTestReportPDF';
@@ -13,7 +13,16 @@ export default function Candidates() {
   const [showModal, setShowModal] = useState(false);
   const [selectedCandidateToPrint, setSelectedCandidateToPrint] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [editingId, setEditingId] = useState(null);
+  
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
   
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -189,7 +198,36 @@ export default function Candidates() {
     const batchMatch = c.batch?.batchName?.toLowerCase().includes(term);
     const emailMatch = c.emailAddress?.toLowerCase().includes(term);
     return nameMatch || batchMatch || emailMatch;
+  }).sort((a, b) => {
+    if (!sortConfig.key) return 0;
+    
+    let aValue = a[sortConfig.key] || '';
+    let bValue = b[sortConfig.key] || '';
+
+    // Handle nested batch name
+    if (sortConfig.key === 'batchName') {
+      aValue = a.batch?.batchName || '';
+      bValue = b.batch?.batchName || '';
+    }
+
+    if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+    if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
+    if (aValue < bValue) {
+      return sortConfig.direction === 'ascending' ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortConfig.direction === 'ascending' ? 1 : -1;
+    }
+    return 0;
   });
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return <ArrowUpDown className="w-4 h-4 inline-block ml-1 opacity-50" />;
+    return sortConfig.direction === 'ascending' 
+      ? <ChevronUp className="w-4 h-4 inline-block ml-1" />
+      : <ChevronDown className="w-4 h-4 inline-block ml-1" />;
+  };
 
   const handleDelete = async (id) => {
     const pwd = window.prompt('Enter deletion password:');
@@ -250,11 +288,11 @@ export default function Candidates() {
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-sm font-medium text-slate-500 dark:text-slate-400">
-                <th className="p-4">Name</th>
-                <th className="p-4">Roll No</th>
-                <th className="p-4">Batch</th>
-                <th className="p-4">Phone / Email</th>
-                <th className="p-4">UIN</th>
+                <th className="p-4 cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" onClick={() => handleSort('fullName')}>Name <SortIcon columnKey="fullName" /></th>
+                <th className="p-4 cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" onClick={() => handleSort('rollNo')}>Roll No <SortIcon columnKey="rollNo" /></th>
+                <th className="p-4 cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" onClick={() => handleSort('batchName')}>Batch <SortIcon columnKey="batchName" /></th>
+                <th className="p-4 cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" onClick={() => handleSort('phoneNumber')}>Phone / Email <SortIcon columnKey="phoneNumber" /></th>
+                <th className="p-4 cursor-pointer select-none hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" onClick={() => handleSort('uin')}>UIN <SortIcon columnKey="uin" /></th>
                 <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>

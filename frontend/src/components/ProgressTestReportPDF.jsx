@@ -10,16 +10,8 @@ const ProgressTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref)
       <tr key={id}>
         <td style={{ textAlign: 'center', width: '8%' }}>{index + 1}</td>
         <td style={{ width: '50%' }}>{label}</td>
-        <td style={{ textAlign: 'center', width: '21%' }}>
-          <span style={{ position: 'relative' }}>
-            Sat
-            {isSat && <span style={{ position: 'absolute', left: '-5px', top: '0', fontSize: '18px', color: '#000', pointerEvents: 'none' }}>✓</span>}
-          </span>
-          {' / '}
-          <span style={{ position: 'relative' }}>
-            Unsat
-            {!isSat && <span style={{ position: 'absolute', left: '-5px', top: '0', fontSize: '18px', color: '#000', pointerEvents: 'none' }}>✓</span>}
-          </span>
+        <td style={{ textAlign: 'center', width: '21%', fontWeight: 'bold' }}>
+          {isSat ? 'Sat' : 'Unsat'}
         </td>
         <td style={{ width: '21%' }}></td>
       </tr>
@@ -96,12 +88,7 @@ const ProgressTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref)
                 Date of the progress test: &nbsp;&nbsp; <strong>{testDetails.date}</strong>
               </td>
               <td style={{ width: '50%' }}>
-                Type of test: {['Theory', 'Simulator', 'RPA'].map((t, i) => (
-                  <span key={t}>
-                    {testDetails.type === t ? <u><strong>{t}</strong></u> : t}
-                    {i < 2 ? ' / ' : ''}
-                  </span>
-                ))}
+                Type of test: <strong>{testDetails.type}</strong>
               </td>
             </tr>
           </tbody>
@@ -180,16 +167,8 @@ const ProgressTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref)
             {/* Overall Progress */}
             <tr>
               <td colSpan="2" style={{ fontWeight: 'bold' }}>Overall Progress</td>
-              <td style={{ textAlign: 'center' }}>
-                <span style={{ position: 'relative' }}>
-                  Sat
-                  {testDetails['overall'] !== 'Unsat' && <span style={{ position: 'absolute', left: '-5px', top: '0', fontSize: '18px', color: '#000', pointerEvents: 'none' }}>✓</span>}
-                </span>
-                {' / '}
-                <span style={{ position: 'relative' }}>
-                  Unsat
-                  {testDetails['overall'] === 'Unsat' && <span style={{ position: 'absolute', left: '-5px', top: '0', fontSize: '18px', color: '#000', pointerEvents: 'none' }}>✓</span>}
-                </span>
+              <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                {testDetails['overall'] !== 'Unsat' ? 'Sat' : 'Unsat'}
               </td>
               <td></td>
             </tr>

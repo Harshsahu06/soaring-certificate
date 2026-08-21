@@ -74,12 +74,7 @@ const SkillTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref) =>
                 Skill test by {testDetails.dayNight}
               </td>
               <td style={{ width: '50%' }}>
-                Type: {['Fixed Wing', 'RotaryWing', 'Other'].map((t, i) => (
-                  <span key={t}>
-                    {testDetails.type === t ? <u><strong>{t}</strong></u> : t}
-                    {i < 2 ? ' / ' : ''}
-                  </span>
-                ))}
+                Type: <strong>{testDetails.type}</strong>
               </td>
             </tr>
             <tr>
@@ -120,16 +115,8 @@ const SkillTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref) =>
                 <tr key={item.id}>
                   <td style={{ textAlign: 'center' }}>{index + 1}</td>
                   <td>{item.label}</td>
-                  <td style={{ textAlign: 'center' }}>
-                    <span style={{ position: 'relative' }}>
-                      Sat
-                      {isSat && <span style={{ position: 'absolute', left: '-5px', top: '0', fontSize: '18px', color: '#000', pointerEvents: 'none' }}>✓</span>}
-                    </span>
-                    {' / '}
-                    <span style={{ position: 'relative' }}>
-                      Unsat
-                      {!isSat && <span style={{ position: 'absolute', left: '-5px', top: '0', fontSize: '18px', color: '#000', pointerEvents: 'none' }}>✓</span>}
-                    </span>
+                  <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                    {isSat ? 'Sat' : 'Unsat'}
                   </td>
                 </tr>
               )
