@@ -191,18 +191,33 @@ export async function generateCertificatePdf(data, templatePath, customConfig = 
     });
   };
 
-  // Dynamically iterate over all keys in data
-  Object.keys(data).forEach((key) => {
-    let val = data[key];
-    if (key === 'candidateName' && typeof val === 'string') {
-      val = val.toUpperCase();
+  // Dynamically iterate over all config fields to draw them
+  Object.keys(config).forEach((key) => {
+    const fieldConf = config[key];
+
+    if (fieldConf.textTemplate !== undefined) {
+      // Evaluate custom textTemplate replacing {{variable}} with data[variable]
+      let val = fieldConf.textTemplate.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, p1) => {
+        return data[p1] !== undefined ? data[p1] : '';
+      });
+      if (val !== '') {
+        drawFieldText(key, val);
+      }
+    } else {
+      // Fallback for standard predefined fields for backward compatibility
+      let val = data[key];
+      // if (key === 'candidateName' && typeof val === 'string') {
+      //   val = val.toUpperCase();
+      // }
+      if (!isRptoCert) {
+        // We used to append "Duration: ", "Issued: ", "Cert No: " here.
+        // Removed to ensure the generated PDF matches the exact text in the visual mapper/preview.
+      }
+
+      if (val !== undefined && val !== null && val !== '') {
+        // drawFieldText(key, val);
+      }
     }
-    if (!isRptoCert) {
-      if (key === 'duration' && val && !val.startsWith('Duration:')) val = `Duration: ${val}`;
-      if (key === 'issueDate' && val && !val.startsWith('Issued:')) val = `Issued: ${val}`;
-      if (key === 'certificateNo' && val && !val.startsWith('Cert No:')) val = `Cert No: ${val}`;
-    }
-    drawFieldText(key, val);
   });
 
   const pdfBytes = await pdfDoc.save();

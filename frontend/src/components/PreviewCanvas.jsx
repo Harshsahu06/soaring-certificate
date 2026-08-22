@@ -390,8 +390,17 @@ export default function PreviewCanvas({
             if (!style) return null;
 
             const conf = (fieldConfigs && fieldConfigs[fieldKey]) || { x: 0, y: 0 };
-            const rawVal = formData[fieldKey] || `[${fieldKey}]`;
-            const val = fieldKey === 'candidateName' ? rawVal.toUpperCase() : rawVal;
+            
+            let val = '';
+            if (conf.textTemplate !== undefined) {
+              val = conf.textTemplate.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+                return formData[key] || '';
+              });
+            } else {
+              const rawVal = formData[fieldKey] || `[${fieldKey}]`;
+              val = fieldKey === 'candidateName' ? rawVal.toUpperCase() : rawVal;
+            }
+            
             const isActive = activeField === fieldKey;
 
             return (

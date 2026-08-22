@@ -146,7 +146,18 @@ app.get('/api/templates', async (req, res) => {
     if (isDbConnected) {
       const configsDoc = await TemplateConfig.find({});
       configsDoc.forEach((item) => {
-        dbConfigs[item.templateName] = item.fieldConfigs;
+        let tName = item.templateName;
+        let pName = 'Default';
+        if (tName.includes('::')) {
+          const parts = tName.split('::');
+          tName = parts[0];
+          pName = parts.slice(1).join('::');
+        }
+        
+        if (!dbConfigs[tName]) {
+          dbConfigs[tName] = {};
+        }
+        dbConfigs[tName][pName] = item.fieldConfigs;
       });
     }
 
@@ -219,15 +230,17 @@ app.get('/api/configs/:templateName', async (req, res) => {
 // Save / Update Field Coordinates in MongoDB
 app.post('/api/configs/save', async (req, res) => {
   try {
-    const { templateName, fieldConfigs } = req.body;
+    const { templateName, profileName = 'Default', fieldConfigs } = req.body;
     if (!templateName || !fieldConfigs) {
       return res.status(400).json({ success: false, message: 'Template name and fieldConfigs required' });
     }
 
+    const dbKey = profileName === 'Default' ? templateName : `${templateName}::${profileName}`;
+
     if (isDbConnected) {
       await TemplateConfig.findOneAndUpdate(
-        { templateName },
-        { templateName, fieldConfigs },
+        { templateName: dbKey },
+        { templateName: dbKey, fieldConfigs },
         { upsert: true, new: true }
       );
       res.json({ success: true, message: 'Template coordinates saved to MongoDB' });
@@ -253,6 +266,8 @@ app.post('/api/generate-single', async (req, res) => {
       groundTo = '',
       simulatorFrom = '',
       simulatorTo = '',
+      flyingFrom = '',
+      flyingTo = '',
       uin = '',
       templateFileName = 'default-template.pdf',
       customConfig = {},
@@ -272,6 +287,8 @@ app.post('/api/generate-single', async (req, res) => {
         groundTo,
         simulatorFrom,
         simulatorTo,
+        flyingFrom,
+        flyingTo,
         uin,
       },
       templatePath,

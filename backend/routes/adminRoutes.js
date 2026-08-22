@@ -250,7 +250,7 @@ router.get('/next-rollno', async (req, res) => {
 
 router.post('/generate-certificate', async (req, res) => {
   try {
-    const { candidateId, uinId, certificateNo, rollNo, courseName, duration, issueDate, templateFileName = 'default-template.pdf', groundFrom, groundTo, simulatorFrom, simulatorTo } = req.body;
+    const { candidateId, uinId, certificateNo, rollNo, courseName, duration, issueDate, templateFileName = 'default-template.pdf', groundFrom, groundTo, simulatorFrom, simulatorTo, flyingFrom, flyingTo } = req.body;
 
     const candidate = await Candidate.findById(candidateId).populate('batch');
     const uin = await UIN.findById(uinId);
@@ -281,6 +281,8 @@ router.post('/generate-certificate', async (req, res) => {
       groundTo: formatDate(groundTo || candidate.batch?.groundClassTo),
       simulatorFrom: formatDate(simulatorFrom || candidate.batch?.simulatorFrom),
       simulatorTo: formatDate(simulatorTo || candidate.batch?.flyingClassTo || candidate.batch?.simulatorTo),
+      flyingFrom: formatDate(flyingFrom || candidate.batch?.flyingClassFrom),
+      flyingTo: formatDate(flyingTo || candidate.batch?.flyingClassTo),
       uin: uin.uinNumber
     };
 

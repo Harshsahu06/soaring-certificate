@@ -38,15 +38,15 @@ const SkillTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref) =>
                 <img src={logo} alt="Soaring Logo" style={{ width: '80px', height: 'auto' }} onError={(e) => e.target.style.display = 'none'} />
               </td>
               <td rowSpan="2" style={{ width: '50%', fontWeight: 'bold', fontSize: '18px', padding: '15px 10px' }}>
-                RPAS TRAINING AND<br/>PROCEDURES MANUAL
-                <div style={{ fontSize: '13px', fontWeight: 'normal', marginTop: '10px' }}>SOARING AEROTECH<br/>PRIVATE LIMITED</div>
+                RPAS TRAINING AND<br />PROCEDURES MANUAL
+                <div style={{ fontSize: '13px', fontWeight: 'normal', marginTop: '10px' }}>SOARING AEROTECH<br />PRIVATE LIMITED</div>
               </td>
               <td style={{ width: '30%', fontWeight: 'bold', fontSize: '14px' }}>
                 SAPL/RPAS/TPM
               </td>
             </tr>
             <tr>
-              <td style={{ fontSize: '13px' }}>ISSUE-1 Rev.0<br/><br/>Aug 2023</td>
+              <td style={{ fontSize: '13px' }}>ISSUE-1 Rev.0<br /><br />Aug 2023</td>
             </tr>
           </tbody>
         </table>
@@ -116,7 +116,7 @@ const SkillTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref) =>
                   <td style={{ textAlign: 'center' }}>{index + 1}</td>
                   <td>{item.label}</td>
                   <td style={{ textAlign: 'center', fontWeight: 'bold' }}>
-                    {isSat ? 'Sat' : 'Unsat'}
+                    {isSat ? 'Satisfactory' : 'Un-Satisfactory'}
                   </td>
                 </tr>
               )
@@ -127,7 +127,7 @@ const SkillTestReportPDF = React.forwardRef(({ candidate, testDetails }, ref) =>
         {/* Comments */}
         <div style={{ marginBottom: '80px', lineHeight: '2' }}>
           Comments if any: &nbsp; <strong>{testDetails.comments || 'NIL'}</strong>
-          <br/>
+          <br />
           <div style={{ borderBottom: '1px dashed #ccc', marginTop: '10px' }}></div>
           <div style={{ borderBottom: '1px dashed #ccc', marginTop: '20px' }}></div>
         </div>

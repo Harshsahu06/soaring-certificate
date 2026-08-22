@@ -18,10 +18,15 @@ export default function CertificateGen() {
     groundFrom: '',
     groundTo: '',
     simulatorFrom: '',
-    simulatorTo: ''
+    simulatorTo: '',
+    flyingFrom: '',
+    flyingTo: ''
   });
 
   const [loading, setLoading] = useState(false);
+  const [savedConfigsMap, setSavedConfigsMap] = useState({});
+  const [activeProfile, setActiveProfile] = useState('Default');
+  const [availableProfiles, setAvailableProfiles] = useState(['Default']);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,12 +42,17 @@ export default function CertificateGen() {
         // Show all UINs
         setUins(uinRes.data);
         setTemplates(tempRes.data.templates || []);
+        
+        const dbConfigs = tempRes.data.savedConfigs || {};
+        setSavedConfigsMap(dbConfigs);
 
         // Initialize sequences
         const { nextSequence, year } = seqRes.data;
+        const availableTemplates = tempRes.data.templates || [];
         setFormData(prev => ({
           ...prev,
-          certificateNo: `SAPL/${year}/${nextSequence}`
+          certificateNo: `SAPL/${year}/${nextSequence}`,
+          templateFileName: availableTemplates.length > 0 ? availableTemplates[0].filename : prev.templateFileName
         }));
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -54,6 +64,37 @@ export default function CertificateGen() {
   // When candidate changes, if they already have a custom rollNo, we could load it.
   // But to keep it simple and fulfill "it come according to format by default", we leave the auto-generated one
   // unless the candidate explicitly has one that matches the format.
+  useEffect(() => {
+    if (!formData.templateFileName) return;
+    
+    const templateConfigs = savedConfigsMap[formData.templateFileName] || {};
+    const profiles = new Set(Object.keys(templateConfigs));
+
+    // Also scan localStorage for profiles
+    try {
+      const prefix = `cert_config_${formData.templateFileName}_`;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(prefix)) {
+          const pName = key.substring(prefix.length);
+          if (pName) profiles.add(pName);
+        }
+      }
+    } catch (e) {}
+
+    const profileArr = Array.from(profiles);
+    
+    if (profileArr.length === 0) {
+      setAvailableProfiles(['Default']);
+      setActiveProfile('Default');
+    } else {
+      setAvailableProfiles(profileArr.includes('Default') ? profileArr : ['Default', ...profileArr]);
+      if (!profileArr.includes(activeProfile) && activeProfile !== 'Default') {
+        setActiveProfile('Default');
+      }
+    }
+  }, [formData.templateFileName, savedConfigsMap]);
+
   const handleCandidateChange = (e) => {
     const candidateId = e.target.value;
     const candidate = candidates.find(c => c._id === candidateId);
@@ -64,7 +105,9 @@ export default function CertificateGen() {
       groundFrom: candidate?.batch?.groundClassFrom || '',
       groundTo: candidate?.batch?.groundClassTo || '',
       simulatorFrom: candidate?.batch?.simulatorFrom || '',
-      simulatorTo: candidate?.batch?.flyingClassTo || ''
+      simulatorTo: candidate?.batch?.simulatorTo || '',
+      flyingFrom: candidate?.batch?.flyingClassFrom || '',
+      flyingTo: candidate?.batch?.flyingClassTo || ''
     }));
   };
 
@@ -72,14 +115,24 @@ export default function CertificateGen() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Load custom config from localStorage to ensure latest layout is used
+      // Load custom config for selected profile
       let customConfig = {};
-      try {
-        const local = localStorage.getItem(`cert_config_${formData.templateFileName}`);
-        if (local) {
-          customConfig = JSON.parse(local);
-        }
-      } catch (e) { }
+      
+      if (savedConfigsMap[formData.templateFileName] && savedConfigsMap[formData.templateFileName][activeProfile]) {
+        customConfig = savedConfigsMap[formData.templateFileName][activeProfile];
+      } else if (activeProfile === 'Default') {
+        // Fallback to localStorage if default
+        try {
+          const local = localStorage.getItem(`cert_config_${formData.templateFileName}_Default`);
+          if (local) {
+            customConfig = JSON.parse(local);
+          } else {
+            // Also try old format
+            const oldLocal = localStorage.getItem(`cert_config_${formData.templateFileName}`);
+            if (oldLocal) customConfig = JSON.parse(oldLocal);
+          }
+        } catch (e) { }
+      }
 
       const response = await axios.post(
         `/api/admin/generate-certificate`,
@@ -163,6 +216,16 @@ export default function CertificateGen() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Select Format Profile</label>
+              <select required className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                value={activeProfile} onChange={e => setActiveProfile(e.target.value)}>
+                {availableProfiles.map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium mb-2 dark:text-slate-300">Certificate Number</label>
               <input required type="text" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                 value={formData.certificateNo} onChange={e => setFormData({ ...formData, certificateNo: e.target.value })} />
@@ -208,6 +271,18 @@ export default function CertificateGen() {
               <label className="block text-sm font-medium mb-2 dark:text-slate-300">Simulator To</label>
               <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
                 value={formData.simulatorTo} onChange={e => setFormData({ ...formData, simulatorTo: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Flying From</label>
+              <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
+                value={formData.flyingFrom} onChange={e => setFormData({ ...formData, flyingFrom: e.target.value })} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 dark:text-slate-300">Flying To</label>
+              <input required type="date" className="w-full px-4 py-3 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono"
+                value={formData.flyingTo} onChange={e => setFormData({ ...formData, flyingTo: e.target.value })} />
             </div>
 
           </div>

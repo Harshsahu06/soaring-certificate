@@ -17,7 +17,9 @@ export default function TemplateSettings() {
     uin: 'UA12345678',
     courseName: 'Drone Pilot Training',
     duration: '10 Days',
-    issueDate: '10/01/2026'
+    issueDate: '10/01/2026',
+    flyingFrom: '11/01/2026',
+    flyingTo: '15/01/2026'
   });
 
   const [savedConfigsMap, setSavedConfigsMap] = useState({});
@@ -42,31 +44,10 @@ export default function TemplateSettings() {
     fetchTemplates();
   }, []);
 
-  // Apply configs when template changes
-  useEffect(() => {
-    if (!selectedTemplate) return;
 
-    // 1. Try to get from DB map
-    if (savedConfigsMap[selectedTemplate]) {
-      setFieldConfigs(savedConfigsMap[selectedTemplate]);
-      return;
-    }
-
-    // 2. Try to get from LocalStorage
-    try {
-      const local = localStorage.getItem(`cert_config_${selectedTemplate}`);
-      if (local) {
-        setFieldConfigs(JSON.parse(local));
-        return;
-      }
-    } catch (e) { }
-
-    // 3. Reset if neither found
-    setFieldConfigs({});
-  }, [selectedTemplate, savedConfigsMap]);
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="w-full max-w-[1800px] mx-auto px-2 sm:px-4">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Certificate Template Editor</h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -85,6 +66,7 @@ export default function TemplateSettings() {
           formData={formData}
           setFormData={setFormData}
           theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
+          savedConfigsMap={savedConfigsMap}
         />
       </div>
     </div>

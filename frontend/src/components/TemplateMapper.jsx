@@ -13,13 +13,86 @@ export default function TemplateMapper({
   formData = {},
   setFormData = () => { },
   theme = 'light',
+  savedConfigsMap = {},
 }) {
   const isDark = theme === 'dark';
   const [activeField, setActiveField] = useState('candidateName');
   const [uploading, setUploading] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  
+  const [activeProfile, setActiveProfile] = useState('Default');
+  const [availableProfiles, setAvailableProfiles] = useState(['Default']);
 
-  const fieldLabels = {
+  // Sync available profiles when template or map changes
+  React.useEffect(() => {
+    if (!selectedTemplate) return;
+    
+    const templateConfigs = savedConfigsMap[selectedTemplate] || {};
+    const profiles = new Set(Object.keys(templateConfigs));
+
+    // Also scan localStorage for profiles
+    try {
+      const prefix = `cert_config_${selectedTemplate}_`;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(prefix)) {
+          const pName = key.substring(prefix.length);
+          if (pName) profiles.add(pName);
+        }
+      }
+    } catch (e) {}
+
+    const profileArr = Array.from(profiles);
+    
+    if (profileArr.length === 0) {
+      setAvailableProfiles(['Default']);
+      setActiveProfile('Default');
+      setFieldConfigs({}); // Reset or load localstorage fallback
+    } else {
+      setAvailableProfiles(profileArr.includes('Default') ? profileArr : ['Default', ...profileArr]);
+      // If activeProfile isn't in the new list, switch to Default
+      if (!profileArr.includes(activeProfile) && activeProfile !== 'Default') {
+        setActiveProfile('Default');
+      }
+    }
+  }, [selectedTemplate, savedConfigsMap]);
+
+  // Load fieldConfigs when activeProfile or selectedTemplate changes
+  React.useEffect(() => {
+    if (!selectedTemplate) return;
+
+    const templateConfigs = savedConfigsMap[selectedTemplate] || {};
+    if (templateConfigs[activeProfile]) {
+      setFieldConfigs(templateConfigs[activeProfile]);
+      return;
+    }
+
+    // Try LocalStorage fallback if Default
+    if (activeProfile === 'Default') {
+      try {
+        const local = localStorage.getItem(`cert_config_${selectedTemplate}_Default`);
+        if (local) {
+          setFieldConfigs(JSON.parse(local));
+          return;
+        }
+      } catch (e) { }
+    }
+
+    setFieldConfigs({});
+  }, [selectedTemplate, activeProfile, savedConfigsMap]);
+
+  const handleCreateProfile = () => {
+    const name = window.prompt("Enter new formatting profile name:");
+    if (name && name.trim()) {
+      const trimmedName = name.trim();
+      if (!availableProfiles.includes(trimmedName)) {
+        setAvailableProfiles([...availableProfiles, trimmedName]);
+      }
+      setActiveProfile(trimmedName);
+    }
+  };
+
+  const defaultFieldLabels = {
     candidateName: 'Candidate Name',
     rollNo: 'Roll No',
     groundFrom: 'Ground From',
@@ -31,6 +104,41 @@ export default function TemplateMapper({
     courseName: 'Course Name',
     duration: 'Duration',
     issueDate: 'Issue Date',
+    flyingFrom: 'Flying From',
+    flyingTo: 'Flying To'
+  };
+
+  const [fieldLabels, setFieldLabels] = useState(defaultFieldLabels);
+
+  // Sync custom fields from configs
+  React.useEffect(() => {
+    const updatedLabels = { ...defaultFieldLabels };
+    Object.keys(fieldConfigs).forEach(key => {
+      if (!updatedLabels[key]) {
+        updatedLabels[key] = fieldConfigs[key].displayName || key;
+      }
+    });
+    setFieldLabels(updatedLabels);
+  }, [fieldConfigs]);
+
+  const addCustomField = () => {
+    const key = `custom_${Date.now()}`;
+    const displayName = `Custom Text ${Object.keys(fieldConfigs).length + 1}`;
+    
+    setFieldConfigs((prev) => ({
+      ...prev,
+      [key]: {
+        x: 400,
+        y: 300,
+        fontSize: 16,
+        font: 'Helvetica',
+        color: '#000000',
+        align: 'left',
+        textTemplate: 'New Custom Text',
+        displayName: displayName
+      },
+    }));
+    setActiveField(key);
   };
 
   const fontsList = [
@@ -72,6 +180,15 @@ export default function TemplateMapper({
     }));
   };
 
+  const removeCustomField = (field) => {
+    setFieldConfigs((prev) => {
+      const newConfigs = { ...prev };
+      delete newConfigs[field];
+      return newConfigs;
+    });
+    setActiveField('candidateName');
+  };
+
   const handleNudge = (dx, dy) => {
     const current = fieldConfigs?.[activeField] || { x: 400, y: 300 };
     handleFieldChange(activeField, {
@@ -85,11 +202,12 @@ export default function TemplateMapper({
       setSaveMsg('Saving coordinates permanently...');
 
       try {
-        localStorage.setItem(`cert_config_${selectedTemplate}`, JSON.stringify(fieldConfigs));
+        localStorage.setItem(`cert_config_${selectedTemplate}_${activeProfile}`, JSON.stringify(fieldConfigs));
       } catch (e) { }
 
       await axios.post('/api/configs/save', {
         templateName: selectedTemplate,
+        profileName: activeProfile,
         fieldConfigs,
       });
 
@@ -341,9 +459,9 @@ export default function TemplateMapper({
   const labelStyle = `block text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-600'} uppercase tracking-wider mb-1 flex items-center gap-1`;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
       {/* Left Panel: Field Position Sliders & Controls */}
-      <div className="lg:col-span-6 space-y-6">
+      <div className="lg:col-span-5 xl:col-span-4 space-y-6">
         {/* Template Switcher & Upload Bar */}
         <div className="glass-panel p-5 rounded-2xl border border-slate-800 shadow-xl space-y-4">
           <div>
@@ -362,6 +480,32 @@ export default function TemplateMapper({
                   {tpl.name} ({tpl.type.toUpperCase()})
                 </option>
               ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={`block text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'} uppercase tracking-wider mb-2 flex items-center gap-1.5 font-heading`}>
+              <Settings className="w-4 h-4 text-amber-500" /> Formatting Profile
+            </label>
+            <select
+              value={activeProfile}
+              onChange={(e) => {
+                if (e.target.value === 'CREATE_NEW') {
+                  handleCreateProfile();
+                } else {
+                  setActiveProfile(e.target.value);
+                }
+              }}
+              className={isDark
+                ? 'w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-slate-100 font-medium focus:outline-none focus:border-amber-500 transition-all cursor-pointer shadow-inner'
+                : 'w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:outline-none focus:border-amber-500 transition-all cursor-pointer shadow-sm'}
+            >
+              {availableProfiles.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+              <option value="CREATE_NEW" className="font-bold text-amber-500">+ Create New Profile...</option>
             </select>
           </div>
 
@@ -418,10 +562,12 @@ export default function TemplateMapper({
 
           {/* Field Selection Tabs */}
           <div>
-            <label className={`block text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-600'} uppercase tracking-wider mb-2 flex items-center gap-1 font-heading`}>
-              <Target className="w-3.5 h-3.5 text-amber-500" /> Select Field to Adjust
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
+            <div className="flex items-center justify-between mb-2">
+              <label className={`block text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-600'} uppercase tracking-wider flex items-center gap-1 font-heading`}>
+                <Target className="w-3.5 h-3.5 text-amber-500" /> Select Field to Adjust
+              </label>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1 pb-1">
               {Object.keys(fieldLabels).map((fieldKey) => (
                 <button
                   key={fieldKey}
@@ -429,41 +575,86 @@ export default function TemplateMapper({
                   className={`px-3 py-2 rounded-xl text-xs font-medium transition-all text-left truncate flex items-center justify-between ${activeField === fieldKey
                     ? 'bg-amber-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25 ring-2 ring-amber-400'
                     : isDark
-                      ? 'bg-slate-900/90 text-slate-400 hover:text-slate-200 border border-slate-800/80'
-                      : 'bg-white text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm'
+                      ? 'bg-slate-900/90 text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-amber-500/30'
+                      : 'bg-white text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm hover:border-amber-400/50'
                     }`}
                 >
-                  <span className="truncate">{fieldLabels[fieldKey]}</span>
-                  {activeField === fieldKey && <span className="w-1.5 h-1.5 rounded-full bg-slate-950"></span>}
+                  <span className="truncate">{fieldLabels[fieldKey] || (fieldConfigs[fieldKey]?.displayName) || fieldKey}</span>
+                  {activeField === fieldKey && <span className="w-1.5 h-1.5 rounded-full bg-slate-950 flex-shrink-0 ml-1"></span>}
                 </button>
               ))}
+              <button
+                onClick={addCustomField}
+                className={`px-3 py-2 rounded-xl text-xs font-medium transition-all text-center flex items-center justify-center gap-1 border border-dashed border-amber-500/50 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10`}
+              >
+                <span>+ Add Custom Text</span>
+              </button>
             </div>
           </div>
 
           {/* Active Field Controls Box */}
           <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-950/80 border-slate-800/80' : 'bg-slate-50 border-slate-200'} space-y-5 shadow-inner`}>
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-              <span className="text-sm font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                <Settings className="w-4 h-4" /> {fieldLabels[activeField]}
-              </span>
-              <span className={`text-xs font-mono px-2 py-0.5 rounded border ${isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-white text-slate-700 border-slate-300'}`}>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                  <Settings className="w-4 h-4" /> {fieldLabels[activeField] || currentConf.displayName || activeField}
+                </span>
+                {activeField.startsWith('custom_') && (
+                  <button 
+                    onClick={() => removeCustomField(activeField)}
+                    className="text-[10px] font-semibold text-red-500 bg-red-500/10 hover:bg-red-500 hover:text-white px-2 py-0.5 rounded transition-colors"
+                  >
+                    Delete Block
+                  </button>
+                )}
+              </div>
+              <span className={`text-[10px] font-mono px-2.5 py-1 rounded-md border ${isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-white text-slate-700 border-slate-300 shadow-sm'}`}>
                 X: {Number(currentConf.x || 0).toFixed(2)} | Y: {Number(currentConf.y || 0).toFixed(2)} | Size: {currentConf.fontSize}pt
               </span>
             </div>
 
-            {/* Live Text Field Input for Preview Testing */}
-            <div>
-              <label className={labelStyle}>
-                <Type className="w-3.5 h-3.5 text-amber-500" /> Sample Text for {fieldLabels[activeField]}
-              </label>
-              <input
-                type="text"
-                value={formData[activeField] || ''}
-                onChange={(e) => setFormData((prev) => ({ ...prev, [activeField]: e.target.value }))}
-                className={inputStyle}
-                placeholder={`Enter sample text for ${fieldLabels[activeField]}`}
-              />
-            </div>
+            {/* Custom Text Template Editor */}
+            {currentConf.textTemplate !== undefined && (
+              <div className="pb-4 border-b border-slate-200 dark:border-slate-800">
+                <label className={labelStyle}>
+                  <Type className="w-3.5 h-3.5 text-amber-500" /> Text Template
+                </label>
+                <textarea
+                  value={currentConf.textTemplate || ''}
+                  onChange={(e) => handleConfigChange(activeField, 'textTemplate', e.target.value)}
+                  className={`${inputStyle} min-h-[60px] resize-y mb-2 font-mono text-[13px] leading-relaxed`}
+                  placeholder="e.g. ROLL NO: {{rollNo}}"
+                />
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-1">Insert Variable:</span>
+                  {['candidateName', 'rollNo', 'certificateNo', 'uin', 'courseName', 'duration', 'issueDate', 'groundFrom', 'groundTo', 'simulatorFrom', 'simulatorTo', 'flyingFrom', 'flyingTo'].map(v => (
+                    <button 
+                      key={v} 
+                      className="text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded hover:bg-amber-500 hover:text-slate-900 transition-colors font-mono" 
+                      onClick={() => handleConfigChange(activeField, 'textTemplate', (currentConf.textTemplate || '') + '{{' + v + '}}')}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Live Text Field Input for Preview Testing (Only show if not using textTemplate) */}
+            {currentConf.textTemplate === undefined && (
+              <div>
+                <label className={labelStyle}>
+                  <Type className="w-3.5 h-3.5 text-amber-500" /> Sample Text for {fieldLabels[activeField] || activeField}
+                </label>
+                <input
+                  type="text"
+                  value={formData[activeField] || ''}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, [activeField]: e.target.value }))}
+                  className={inputStyle}
+                  placeholder={`Enter sample text for ${fieldLabels[activeField] || activeField}`}
+                />
+              </div>
+            )}
 
             {/* Fine Nudge Arrow Pad */}
             <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
@@ -650,7 +841,7 @@ export default function TemplateMapper({
       </div>
 
       {/* Right Panel: Canvas Preview */}
-      <div className="lg:col-span-6 flex flex-col justify-start">
+      <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-start">
         <div className="glass-panel p-6 rounded-2xl border border-slate-800 shadow-xl h-full flex flex-col justify-center">
           <PreviewCanvas
             formData={formData}
